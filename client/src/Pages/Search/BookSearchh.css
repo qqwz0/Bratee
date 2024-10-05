@@ -1,0 +1,139 @@
+.primary-button {
+    padding: 0.9rem 1.75rem;
+    background-color: white;
+    outline: none;
+    border: none;
+    border-radius: 5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+  }
+
+  .primary-heading {
+    font-size: clamp(2rem, 5vw, 4rem);
+    color: #4c4c4c;
+    /* line-height: 5rem; */
+    max-width: 600px;
+  }
+
+  #about-heading {
+    justify-content: center;
+    max-width: 100%;
+  }
+  .search-books-container {
+    text-align: center;
+    margin-top: 3rem;
+    margin-bottom: 0;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .primary-text {
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    max-width: 500px;
+    color: #6a6a6a;
+    margin: 1.5rem 0rem;
+    font-weight: 600;
+  }
+  
+  #about-text {
+    max-width: 80%;
+  }
+
+  .book-carousel-container {
+    width:100%;
+    height:400px;
+  }
+
+  .react-multi-carousel-list {
+    width: 100%;
+    height:100%;
+  }
+
+  /* Book card container */
+  .book-cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .book-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    padding-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .book-card img {
+    width: 100%;
+    height: 250px;
+    border-radius: 10px;
+    object-fit: cover;
+  }
+  
+  .book-card h3 {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    color: #333;
+  }
+  
+  .book-card p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  
+  .book-card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Search button container */
+  .search-button-container {
+    margin-top: 40px;
+  }
+  
+  .search-button {
+    background-color: #a855f7;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .search-button:hover {
+    background-color: #9333ea;
+  }
+  
+  .search-button i {
+    font-size: 1.2rem;
+  }
+  
+  .book-card-text {
+    justify-content: center;
+    display: flex;
+    width: 100%;
+    flex-grow: 1;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 700;
+    color: #515151;
+  }
+
+
