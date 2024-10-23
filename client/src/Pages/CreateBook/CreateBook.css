@@ -1,6 +1,5 @@
 .modal {
     width: 500px;
-    padding: 20px;
     background: white;
     border: none; /* Remove border */
     border-radius: 10px;
@@ -9,6 +8,7 @@
     left: 50%;
     transform: translate(-50%, -50%); /* Centering the modal */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    padding-top: 0px;
   }
   
   .modal-overlay {
@@ -36,3 +36,99 @@
     border: none;
     cursor: pointer;
   }
+
+.form-container {
+  padding: 36px 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+} 
+
+.close-modal-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  border-radius: 50%;
+  border: none;
+  background-color: rgba(229, 229, 229, 0); /* Choose a background color */
+  color: #4F4F4F; /* Cross color */
+  font-size: 40px; /* Cross size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* .close-modal-button:hover {
+  background-color: rgb(195, 194, 194);
+  transition: 0.2s; Darker color on hover
+} */
+
+.form-container h1 {
+  text-align: center;
+  padding-bottom: 0.5rem;
+  font-size: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 7px;
+}
+
+.form-group input, textarea{
+  border-radius: 8px;
+  min-height: 45px;
+  padding: 7px;
+  box-shadow: none;
+  border: 2px solid rgba(172, 172, 172, 0.5);
+  font-weight: 500;
+  font-size: 14px;
+}
+
+#cover {
+  border: none;
+  padding-bottom: 0;
+}
+
+
+.form-field {
+  color: grey;
+}
+
+.submit-button {
+  padding: 0.7rem 1.9rem;
+  background-color: #9747FF;
+  outline: none;
+  border: none;
+  border-radius: 5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: white;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+}
+
+.submit-button:hover {
+  background-color: #7838cd;
+}
+
+.error-message {
+  font-size: 13px;
+  color: rgb(212, 72, 72);
+  margin-top: 3px;
+}

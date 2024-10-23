@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       cover: {
-        type: DataTypes.BLOB('long'),
+        type: DataTypes.STRING,
         allowNull: true,
       },
     });
@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
         Books.belongsTo(models.Authors, {
             foreignKey: {allowNull: false}
         })
+        ;
+        Books.hasMany(models.Reviews, {
+            foreignKey: {allowNull: false}
+        });
     };
 
     return Books;

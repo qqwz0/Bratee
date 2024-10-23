@@ -1,3 +1,17 @@
+.search-book-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.carousel-books-container h1{
+  text-align: left;
+  color: #4c4c4c;
+  line-height: 5rem;
+  font-size: 60px;
+} 
+
 .primary-button {
     padding: 0.9rem 1.75rem;
     background-color: white;
@@ -21,7 +35,7 @@
     justify-content: center;
     max-width: 100%;
   }
-  .search-books-container {
+  .carousel-books-container {
     text-align: center;
     margin-top: 3rem;
     margin-bottom: 0;
@@ -30,6 +44,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin-bottom: 3rem;
   }
 
   .primary-text {
@@ -72,7 +87,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    overflow: hidden;
   }
+  
   
   .book-card img {
     width: 100%;
@@ -136,4 +154,48 @@
     color: #515151;
   }
 
+  .book-cover {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
 
+  .book-card-text {
+    height: 60px; /* Fixed height initially */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    white-space: normal;
+    transition: all 0.3s ease-in-out;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .book-card:hover .book-card-text {
+    height: auto; /* Expand height to fit content */
+    overflow: visible; /* Allow text to fully show */
+    -webkit-line-clamp: unset; /* Disable ellipsis */
+    display: block; /* Switch display to block to allow wrapping */
+  }
+
+.react-multi-carousel-track {
+  display: flex;
+  flex: row;
+  align-items: center;
+  height: 450px;}
+
+#search-books-input-container {
+  padding: 0.4rem;
+}
+
+#search-books-input {
+  font-size: 15px;
+}
+
+#search-books-button {
+  font-size: 15px;
+  padding: 0.8rem 1rem;
+}
+  

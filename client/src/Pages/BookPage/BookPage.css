@@ -1,0 +1,164 @@
+.book-banner-container {
+    position: relative;
+    display: flex;
+    padding-top: 3rem;
+    flex-direction: column;
+  }
+  .home-bannerImage-container {
+    position: absolute;
+    top: -100px;
+    right: -170px;
+    z-index: -2;
+    max-width: 700px;
+  }
+
+.book-description {
+    display: flex;
+    flex-direction: row;
+    gap: 70px;
+    padding: 20px;
+    margin-bottom: 1rem;
+}
+
+.book-pic {
+    width: 300px;
+    height: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bookCover {
+    border-radius: 20px;
+    object-fit: cover;
+    /* height: 300px; */
+    width: 300px;
+    height: 450px;
+}
+
+.book-stats {
+    list-style: none;
+    width: auto;
+}
+
+.book-stat p, h4{
+    font-size: 25px;
+    color: rgb(80,80,80);
+    font-weight: 600;
+}
+
+.book-stat h4 {
+    color: rgb(0, 0, 0);
+}
+
+#name h1{
+    font-size: 45px;
+}
+
+#bookPageButton {
+    padding: 1.3rem 2.5rem;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.reviewSection {
+    margin-top: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 5rem;
+}
+
+#bookPageReviewButton {
+    width: 100%;
+    padding: 1.3rem 2.5rem;
+}
+
+  
+  /* Testimonial card container */
+  .review-card {
+    margin-top: 3rem;
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 400px;
+  }
+  
+  /* Profile picture styling */
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+  }
+  
+  /* Name styling */
+  h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  /* Star ratings styling */
+  .stars {
+    color: #FFB703; /* Orange star color */
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  /* Testimonial text styling */
+  .testimonial-text {
+    font-size: 16px;
+    color: #5A5A5A;
+    line-height: 1.5;
+  }
+
+  .review-card {
+    background-color: white;
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 50%;
+    margin-top: 4rem;
+    height: auto;
+  }
+  
+  /* Profile picture styling */
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+  }
+  
+  /* Name styling */
+  h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  /* Star ratings styling */
+  .review-rating {
+    color: #FFB703; /* Orange star color */
+    font-size: 30px;
+    margin-bottom: 15px;
+  }
+  
+  /* Testimonial text styling */
+  .review-text {
+    font-size: 20px;
+    color: #5A5A5A;
+    line-height: 1.5;
+    font-weight: 600;
+  }
+
+/* #name h2{
+    font-size: 20px;
+    color: rgb(80,80,80);
+} */
+
+.review-rating span {
+  font-size: 40px; /* Adjust this value to make the stars bigger * /* Optional: add padding for spacing */
+}
