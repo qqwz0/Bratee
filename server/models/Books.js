@@ -25,6 +25,10 @@ module.exports = (sequelize, DataTypes) => {
         Books.hasMany(models.Reviews, {
             foreignKey: {allowNull: false}
         });
+        Books.belongsTo(models.Users, {
+          foreignKey: {allowNull: false}
+      })
+      ;
     };
 
     return Books;

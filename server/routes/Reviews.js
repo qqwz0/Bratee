@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Reviews } = require("../models");
+const { validateToken } = require('../middleware/AuthMiddleware')
 
 router.get('/:bookId', async (req, res) => {
     const bookId = req.params.bookId;
@@ -8,8 +9,10 @@ router.get('/:bookId', async (req, res) => {
     res.json(reviews);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', validateToken, async (req, res) => {
     const review = req.body;
+    const nickname = req.user.nickname
+    review.nickname = nickname;
     await Reviews.create(review);
     res.json(review);
 });

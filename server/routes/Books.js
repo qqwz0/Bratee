@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Books, Authors, Genres } = require('../models');
+const { validateToken } = require('../middleware/AuthMiddleware')
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -84,9 +85,34 @@ router.get('/byId/:id', async (req, res) => {
     }
 });
 
-router.post('/', upload.single('cover'), async (req, res) => {
+router.get('/byUserId/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const booksByUser = await Books.findAll({
+            where: { UserId: userId }, // Filter books by UserId
+            attributes: ['id', 'title', 'cover', 'CreatedAt', 'description' ], // Include necessary book attributes
+            include: [{
+                model: Authors,
+                attributes: ['full_name'], // Include only the full name of the author
+            }],
+        });
+
+        // Check if books were found
+        if (!booksByUser.length) {
+            return res.status(404).json({ error: 'No books found for this user' });
+        }
+
+        res.json(booksByUser);
+    } catch (error) {
+        console.error("Error fetching books by user ID:", error);
+        res.status(500).json({ error: 'Error fetching books by user ID' });
+    }
+});
+
+router.post('/', validateToken, upload.single('cover'), async (req, res) => {
     try {
         const { title, description, AuthorId, GenreId } = req.body;
+        const userId = req.user.id;
 
         // If an image is uploaded, get the file path
         const coverPath = req.file ? `covers/${req.file.filename}` : null;
@@ -97,7 +123,8 @@ router.post('/', upload.single('cover'), async (req, res) => {
             description,
             AuthorId,
             GenreId,
-            cover: coverPath // Save the image path to the database
+            cover: coverPath,
+            UserId: userId // Save the image path to the database
         });
 
         return res.status(201).json(newBook);
@@ -106,5 +133,51 @@ router.post('/', upload.single('cover'), async (req, res) => {
         return res.status(500).json({ error: 'Error creating book' });
     }
 });
+
+router.put('/:id', upload.single('cover'), async (req, res) => {
+    const { id } = req.params;
+    const { title, description, genreId, authorId } = req.body;
+    
+    try {
+        const book = await Books.findByPk(id);
+        if (!book) return res.status(404).json({ message: 'Book not found' });
+
+        // Handle cover path if a new file is uploaded
+        const coverPath = req.file ? `covers/${req.file.filename}` : book.cover;
+
+        await book.update({
+            title,
+            description,
+            cover: coverPath,
+            genreId,
+            authorId,
+        });
+
+        return res.status(200).json({ message: 'Book updated successfully', book });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while updating the book' });
+    }
+});
+
+// Delete Book API
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const book = await Books.findByPk(id);
+        if (!book) {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+
+        // Delete the book
+        await book.destroy();
+        return res.status(200).json({ message: 'Book deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'An error occurred while deleting the book' });
+    }
+});
+
 
 module.exports = router

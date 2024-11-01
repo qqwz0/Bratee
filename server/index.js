@@ -24,6 +24,10 @@ app.use("/genres", genresRouter);
 const reviewsRouter = require('./routes/Reviews');
 app.use("/reviews", reviewsRouter);
 
+const usersRouter = require('./routes/Users');
+app.use("/users", usersRouter);
+
+
 db.sequelize.sync().then(() => {
     app.listen(port, () => {
         console.log('Server running on port 3001.');
