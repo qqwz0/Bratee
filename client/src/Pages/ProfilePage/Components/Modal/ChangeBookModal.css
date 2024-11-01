@@ -1,0 +1,69 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal form div {
+    margin-bottom: 15px;
+}
+
+/* .slim-modal {
+    width: 400px;
+    width: 100%;
+} */
+
+.slim {
+    width: 400px;
+}
+
+.form-group img {
+    height: 6rem;
+    width: 5rem;
+}
+
+.update-delete {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 10px;
+    margin-bottom: 0px !important;
+}
+
+.update-button {
+    padding: 0.5rem 0.8rem;
+    width: 50%;
+    border: 1px solid #4c4c4c;
+    font-size: 15px;
+
+}
+
+.delete-button {
+    display: flex;
+    padding: 0.5rem 0.8rem;
+    width: 55%;
+    border: 2px solid #b31919;
+    color: #b31919;
+    font-size: 15px;
+    justify-content: center;
+}
+
+.delete-button:hover {
+    background-color:#e03b3b;
+    color: #fff;
+}

@@ -1,0 +1,173 @@
+.login-page-wrapper {
+    position: fixed; /* Make the wrapper cover the entire viewport */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #8A2BE2, #DDA0DD);   
+    animation: gradientAnimation 10s ease infinite;
+    background-size: 300% 300%;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%; /* Start position */
+    }
+    50% {
+        background-position: 100% 50%; /* Midway position */
+    }
+    100% {
+        background-position: 0% 50%; /* End position, loop back to start */
+    }
+}
+
+.login-container {
+    max-width: 410px;
+    margin: 0 auto;
+    border-radius: 0.5rem;
+    padding: 2rem 1.5rem;
+    background: #fff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-container .form-title {
+    text-align: center;
+    font-size: 1.37rem;
+    font-weight: 600;
+    margin-bottom: 1.8rem;
+}
+
+.login-container .social-login {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-login .social-button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.81rem;
+    cursor: pointer;
+    font-size: 1rem;
+    font-family: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 0.31rem;
+    background: #f9f8ff;
+    border: 1px solid #d5cbff;
+}
+
+.social-login .social-button:hover{
+   background: #f1eff9;
+   border-color: #5f41e4;
+   transition: 0.3s ease;
+}
+
+.social-login .social-button .social-icon{
+    width: 23px;
+}
+
+.login-container .separator {
+    margin: 1.5rem 0;
+    text-align: center;
+    position: relative;
+}
+
+
+.login-container .separator span {
+    background: #fff;
+    padding: 0 0.9rem;
+    font-size: 1.06rem;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+}
+
+
+.login-container .separator::after {
+    position: absolute;
+    content: "";
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 1px;
+    background: #bfb3f2;
+}
+
+.login-form .input-wrapper {
+    height: 54px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.login-form .input-wrapper .input-field {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.31rem;
+    border: 1px solid #bfb3f2;
+    padding: 0 1.25rem 0 3.12rem;
+    outline: none;
+    font-size: 1.06rem;
+}
+
+.login-form .input-wrapper .input-field::placeholder {
+    color: #a395e0;
+}
+
+.login-form .input-wrapper svg {
+    color: #a395e0;
+    position: absolute;
+    top: 50%;
+    left: 0.9rem;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.login-form .input-wrapper .input-field:focus ~ svg {
+    color:#5f41e4;
+}
+
+.login-form .login-button {
+    width: 100%;
+    height: 54px;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.25rem;
+    background: #5f41e4;
+    margin-top: 2.19rem;
+    border-radius: 0.31rem;
+    border: none;
+    transition: 0.2 ease;
+}
+
+.login-form .login-button:hover {
+    background: #4320df;
+}
+
+.login-form .forgot-pass-link {
+    display: block;
+    width: fit-content;
+    margin-top: -0.44rem;
+}
+
+.login-container .signup-text {
+    text-align: center;
+    font-weight: 500;
+    margin: 1.75rem 0 0 0.31rem;
+}
+
+.login-container a {
+    color: #5f41e4;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}

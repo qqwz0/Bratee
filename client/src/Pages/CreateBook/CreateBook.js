@@ -30,8 +30,11 @@ function CreateBook() {
 
     const onSubmit = async (data, { resetForm }) => {
         try {
+            const accessToken = sessionStorage.getItem('accessToken');
             // Handling author creation or fetching
-            let authorResponse = await axios.get("http://localhost:3001/authors");
+            let authorResponse = await axios.get("http://localhost:3001/authors", {
+                headers: { accessToken }
+            });
             let authorId;
             const existingAuthor = authorResponse.data.find(
                 author => author.full_name.toLowerCase() === data.AuthorId.toLowerCase()
@@ -68,16 +71,21 @@ function CreateBook() {
 
             // Send the form data to the server
             await axios.post("http://localhost:3001/books", formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: { 'Content-Type': 'multipart/form-data',
+                    accessToken: accessToken
+                 },
             });
 
-            console.log('Book uploaded successfully!');
             setNotification('Book uploaded successfully!'); // Set success message
             resetForm(); // Clear the form fields
 
         } catch (err) {
-            console.error("Error uploading the book:", err);
-            setNotification('Error uploading the book. Please try again.'); // Set error message
+            if (err.response && err.response.status === 403) {
+                setNotification('Unauthorized: Please log in to add a book.');
+            } else {
+                console.error("Error uploading the book:", err);
+                setNotification('Error uploading the book. Please try again.');
+            }
         }
     };
 

@@ -5,6 +5,8 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@mui/icons-material": "^6.1.1",
@@ -15,6 +17,8 @@
     "axios": "^1.7.7",
     "flickity": "^2.3.0",
     "formik": "^2.4.6",
+    "jwt-decode": "^4.0.0",
+    "material-symbols": "^0.25.1",
     "react": "^18.3.1",
     "react-carousel": "^4.3.0",
     "react-dom": "^18.3.1",
@@ -52,6 +56,8 @@
     ]
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.12"
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14"
   }
 }

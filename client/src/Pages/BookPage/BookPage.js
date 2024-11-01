@@ -33,15 +33,31 @@ function BookPage() {
   }, [id]);
 
   const handleAddReview = async (newReview) => {
+    const accessToken = sessionStorage.getItem('accessToken');
+  
+    if (!accessToken) {
+      alert("You must be logged in to add a review.");
+      return;
+    }
+  
     try {
-      // Make a POST request to add the review
-      await axios.post(`http://localhost:3001/reviews/`, { ...newReview, BookId: id });
-      setReviews(prev => [...prev, newReview]); // Update reviews in state
+      // Post the review to the server and receive the full response with nickname
+      const response = await axios.post(
+        'http://localhost:3001/reviews/', 
+        { ...newReview, BookId: id }, 
+        {
+          headers: { accessToken },
+        }
+      );
+  
+      // Update the reviews state with the complete review object from the server
+      setReviews((prev) => [...prev, response.data]);
     } catch (err) {
       console.error("Error adding review:", err);
+      alert("Error adding review. Please try again.");
     }
   };
-
+  
   // Calculate the average rating
   const calculateAverageRating = (reviews) => {
     if (reviews.length === 0) return 0; // No reviews, return 0
@@ -112,7 +128,7 @@ function BookPage() {
           {reviews.map((review, index) => (
             <div className="review-card" key={index}>
               <img src="https://via.placeholder.com/100" alt="Reviewer" className="profile-pic" />
-              <h3>John Doe</h3> 
+              <h3>{review.nickname}</h3> 
               <div className="review-rating">
                 {Array.from({ length: review.rating }, (_, i) => (
                   <span key={i}>&#9733;</span>

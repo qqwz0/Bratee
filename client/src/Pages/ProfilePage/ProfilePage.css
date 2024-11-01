@@ -1,0 +1,156 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Navbar styles */
+.navbar {
+    /* Add any specific navbar styles here */
+}
+
+/* Profile header styles */
+.profile-header {
+    width: 100%;
+}
+
+/* Flex container for the sidebar and main content */
+.flex-container {
+    display: flex;
+    flex: 1;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: 25%; /* or 1/4 */
+    padding: 1rem; /* Adjust padding as needed */
+}
+
+/* Main content area styles */
+.main-content {
+    flex-direction: column;
+    width: 75%; /* or 3/4 */
+    padding: 1rem;
+}
+
+/* Filter container styles */
+.filter-container {
+    width: 100%;
+    margin-bottom: 1rem; /* spacing for the filter */
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+
+.addabook {
+    width: 50px;
+    border-radius: 50%;
+    border: 1px solid #9747FF;
+    background-color: #9747FF;
+    cursor: pointer;
+    color: white;
+    font-size: large;
+}
+
+.addabook:hover {
+    background-color: #7838cd;
+}
+
+/* Input styles */
+.input-filter {
+    border: 1px solid #ccc;
+    padding: 0.7rem;
+    width: 100%;
+    border-radius: 0.75rem; 
+    font-size: 1.125rem;/* rounded corners */
+}
+
+/* Items container styles */
+.items-container {
+    margin-top: 1rem; /* space above items */
+    background-color: white;
+    border-radius: 10px;
+    padding: 0px 7px;
+}
+
+/* List item styles */
+.list-item {
+    display: flex; /* Use flexbox */
+    justify-content: space-between; /* Space between items */
+    align-items: center; /* Center items vertically */
+    border-bottom: 1px solid #ddd; /* Add bottom border */
+    padding: 1rem 0; /* Vertical padding */
+}
+
+/* Item content styles */
+.item-content {
+    display: flex; /* Use flexbox */
+    align-items: center; /* Center items vertically */
+    flex: 1; /* Allow it to take available space */
+}
+
+/* Image styles for book cover */
+.item-image {
+    width: 5rem; /* 12 */
+    height: 6rem; /* 16 */
+    margin-right: 1rem; /* Spacing to the right */
+    border-radius: 3px;
+    background-size: cover;
+}
+
+.item-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.item-author {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #6b7280; 
+}
+
+/* Item details styles */
+.item-details {
+    flex-grow: 1; /* Allows item-details to take available space */
+}
+
+/* Date styles */
+.item-date {
+    color: #6b7280; /* Tailwind gray-500 color */
+    margin-left: auto; /* Push date to the far right */
+}
+
+/* Options styles */
+.item-options {
+    color: #6b7280; /* Tailwind gray-500 color */
+    margin-left: 1rem; /* Space between date and options */
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+/* Sort options styles */
+.sort-options {
+    margin-top: 1rem;
+}
+
+.sort-title {
+    font-weight: bold;
+}
+
+.sort-list {
+    margin-top: 0.5rem; /* space between title and options */
+}
+
+.sort-list .separator {
+    border: none;            /* Remove default border */
+    border-top: 1px solid #ddd; /* Light gray line */
+    margin: 1rem 0;        /* Space above and below the line */
+}
+
+.sort-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.6rem; 
+    gap:5px;
+}

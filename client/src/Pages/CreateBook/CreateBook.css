@@ -132,3 +132,9 @@
   color: rgb(212, 72, 72);
   margin-top: 3px;
 }
+
+.notification-popup {
+  text-align: center;
+  border-color: aqua;
+  margin-bottom: 10px;
+}
