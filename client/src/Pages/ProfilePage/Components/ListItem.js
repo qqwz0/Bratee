@@ -6,6 +6,7 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 const ListItem = ({ item, setItems, onDelete }) => {
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [localTitle, setLocalTitle] = useState(item.title);
 
@@ -36,18 +37,19 @@ const ListItem = ({ item, setItems, onDelete }) => {
 
             if (response.ok) {
                 const updatedBook = await response.json();
-                setItems((prevItems) =>
-                    prevItems.map((item) =>
+                setItems((prevItems) => {
+                    const newItems = prevItems.map((item) =>
                         item.id === updatedBook.book.id
                             ? {
                                 ...item,
                                 title: updatedBook.book.title,
                                 description: updatedBook.book.description,
-                                cover: `${updatedBook.book.cover}?t=${new Date().getTime()}`,
+                                cover: `${updatedBook.book.cover}?t=${new Date().getTime()}`, // Add timestamp to prevent caching
                             }
                             : item
-                    )
-                );
+                    );
+                    return [...newItems]; // Spread into a new array to ensure re-render
+                });
             } else {
                 console.error('Failed to update book');
             }
@@ -65,6 +67,20 @@ const ListItem = ({ item, setItems, onDelete }) => {
         }
     };
 
+    const renderStars = (rating) => {
+        const validRating = Math.max(0, Math.min(5, Number(rating))); // Ensure rating is between 0 and 5
+        const stars = [];
+
+        for (let i = 0; i < 5; i++) {
+            stars.push(
+                <span key={i} className="star">
+                    {i < validRating ? '★' : '☆'}
+                </span>
+            );
+        }
+        return <div className="rating-stars">{stars}</div>;
+    };
+
     return (
         <div className="list-item">
             <div className="item-content">
@@ -74,7 +90,11 @@ const ListItem = ({ item, setItems, onDelete }) => {
                     className="item-image"
                 />
                 <div className="item-details">
-                    <Link to={`/book/${item.id}`} className="item-title">{item.title}</Link>
+                    <Link to={`/book/${item.id}`} className="item-title">
+                      <span style={{ display: 'flex', alignItems: 'center' }}>
+                        {item.title} / {renderStars(item.rating)} {/* Updated title display */}
+                      </span>
+                    </Link>
                     <div className="item-author">{item.Author?.full_name}</div>
                 </div>
             </div>

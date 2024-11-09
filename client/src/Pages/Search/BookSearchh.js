@@ -1,65 +1,141 @@
-import React from "react";
-
-//styles
-import Carousel from 'react-multi-carousel';
-import 'react-multi-carousel/lib/styles.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import './BookSearchh.css'
+import { faMagnifyingGlass, faSortAmountAsc, faSortAmountDesc } from '@fortawesome/free-solid-svg-icons';
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css';
+
 import Navbar from "../../Components/Navbar/Navbar"; 
 import SearchPicture from '../../Assets/search-photo.png';
-
-//axios
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import './BookSearchh.css';
 
 const BookSearchh = () => {
-
-  const [ listOfBooks, setListOfBooks ] = useState([]);
+  const [listOfBooks, setListOfBooks] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOption, setSortOption] = useState('rating');
+  const [sortDirection, setSortDirection] = useState('asc');
   let navigate = useNavigate();
-  // Fetch data from API
-  useEffect(() => {
-    axios.get('http://localhost:3001/books') // Replace with your actual API URL
-      .then((response) => {
-        setListOfBooks(response.data);
-      })}, []); // Empty dependency array means this effect runs once when the component mounts
 
-  // Responsive settings for the carousel
-  const responsive = {
-    desktop: {
-      breakpoint: { max: 3000, min: 800 },
-      items: 5,
-    },
+  useEffect(() => {
+    axios.get('http://localhost:3001/books')
+      .then((response) => {
+        const sortedBooks = sortBooks(response.data, 'rating', 'asc');
+        setListOfBooks(sortedBooks);
+      })
+      .catch((error) => console.error("Error fetching books:", error));
+  }, []);
+
+  useEffect(() => {
+    const sortedBooks = sortBooks(listOfBooks, sortOption, sortDirection);
+    setListOfBooks(sortedBooks);
+  }, [sortOption, sortDirection]);
+
+  const searchBooks = () => {
+    axios.get(`http://localhost:3001/books/search?title=${searchTerm}`)
+      .then((response) => {
+        const sortedBooks = sortBooks(response.data, sortOption, sortDirection);
+        setListOfBooks(sortedBooks);
+      })
+      .catch((error) => {
+        console.error("Error searching for books:", error);
+        setListOfBooks([]); // Clear books if none found
+      });
   };
+
+  const handleSortChange = (event) => {
+    setSortOption(event.target.value);
+  };
+
+  const handleDirectionChange = (event) => {
+    setSortDirection(event.target.value);
+  };
+
+  const sortBooks = (books, option, direction) => {
+    return [...books].sort((a, b) => {
+      let compareValue = 0;
+      
+      if (option === 'title') {
+        compareValue = a.title.localeCompare(b.title);
+      } else if (option === 'rating') {
+        compareValue = Number(b.rating) - Number(a.rating);
+      } else if (option === 'date') {
+        compareValue = new Date(b.createdAt) - new Date(a.createdAt);
+      }
+      
+      return direction === 'asc' ? compareValue : -compareValue;
+    });
+  };
+
+  const tooltipContent = (
+    <div className="tooltip-content">
+      <h4>Сортувати за</h4>
+      <label>
+        <input type="radio" name="sort" value="rating" checked={sortOption === 'rating'} onChange={handleSortChange} />
+        Рейтингом
+      </label>
+      <label>
+        <input type="radio" name="sort" value="title" checked={sortOption === 'title'} onChange={handleSortChange} />
+        Назвою (A-Z)
+      </label>
+      <label>
+        <input type="radio" name="sort" value="date" checked={sortOption === 'date'} onChange={handleSortChange} />
+        Датою додавання
+      </label>
+      <hr />
+      <label>
+        <input type="radio" name="direction" value="asc" checked={sortDirection === 'asc'} onChange={handleDirectionChange} />
+        За зростанням
+      </label>
+      <label>
+        <input type="radio" name="direction" value="desc" checked={sortDirection === 'desc'} onChange={handleDirectionChange} />
+        За спаданням
+      </label>
+    </div>
+  );
 
   return (
     <div>
       <Navbar />
       <div className="search-book-container">
-        <img src={SearchPicture}/>
+        <img src={SearchPicture} alt="Search" />
         <div className="search-books">
-          <h1 class="primary-heading" style={{ textAlign: 'left' }} >Find any added book here!</h1>
+          <h1 className="primary-heading" style={{ textAlign: 'left' }}>Find any added book here!</h1>
           <div className="contact-form-container" id="search-books-input-container">
-            <input type="text" placeholder="Enter book title here" id="search-books-input"/>
-            <button className="secondary-button" id="search-books-button">Search <FontAwesomeIcon icon={faMagnifyingGlass}/></button>
+            <input 
+              type="text" 
+              placeholder="Enter book title here" 
+              id="search-books-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="secondary-button" id="search-books-button" onClick={searchBooks}>
+              Search <FontAwesomeIcon icon={faMagnifyingGlass}/>
+            </button>
           </div>
         </div>
       </div>
-      <div className="carousel-books-container">
-      <h1 classname='primary-heading'>Check out other books!</h1>
-        {/* <h1 className="primary-heading" id="about-heading">Search for your favourite books</h1>
-        <p className="primary-text" id='about-text'>
-          On our website, you'll find a wide variety of books to explore.<br />
-          From bestsellers to hidden gems, browse through different genres and discover your next great read.
-        </p> */}
+      
+      <div className="book-grid-container">
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+          <h4 style={{ marginBottom: '10px', fontSize: '40px' }}>Каталог:</h4>
+          <Tippy content={tooltipContent} interactive={true} placement="bottom-start" trigger="click" arrow={false} theme="custom">
+            <button className="filter-button">
+              <FontAwesomeIcon 
+                icon={sortDirection === 'asc' ? faSortAmountAsc : faSortAmountDesc} 
+                style={{ marginRight: '5px' }}
+              />
+              {sortOption === 'rating' && 'За рейтингом'}
+              {sortOption === 'title' && 'За назвою (A-Z)'}
+              {sortOption === 'date' && 'За датою додавання'}
+            </button>
+          </Tippy>
+        </div>
 
-
-
-        <div className="book-carousel-container">
-          <Carousel responsive={responsive} infinite={true} className="carousel">
+        {listOfBooks.length > 0 ? (
+          <div className="book-grid">
             {listOfBooks.map((book, index) => (
-              <div className="book-card" key={index} onClick={() => {navigate(`/book/${book.id}`)}}>
+              <div className="book-card" key={index} onClick={() => navigate(`/book/${book.id}`)}>
                 {book.cover && (
                   <img 
                     src={`http://localhost:3001/${book.cover}`}
@@ -68,20 +144,18 @@ const BookSearchh = () => {
                   />
                 )}
                 <div className="book-card-text">
+                  <p>Книга</p>
                   <h3>{book.title}</h3>
-                  <p>{book.Author.full_name}</p>
                 </div>
               </div>
             ))}
-          </Carousel>
-        </div>
-
-        <div className="search-button-container">
-          <button className="secondary-button">
-            Search! <FontAwesomeIcon icon={faMagnifyingGlass} />
-          </button>
-        </div>
-      </div>
+          </div>
+        ) : (
+          <div className="no-books-message">
+            <p>No books found.</p>
+          </div>
+        )}
+    </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './SignUp.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -9,9 +9,11 @@ import facebook from '../../Assets/facebook.svg';
 import github from '../../Assets/github.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import {gapi} from 'gapi-script';
 
 function SignUpPage() {
   const navigate = useNavigate();
+  const auth2Ref = useRef(null); // Use useRef to keep track of auth2
 
   const initialValues = {
     nickname: '',
@@ -35,31 +37,77 @@ function SignUpPage() {
 
   const onSubmit = (data) => {
     axios.post('http://localhost:3001/users', data)
-        .then((response) => {
-            console.log('Registration Success:', response.data); // Log the entire response
+      .then((response) => {
+        console.log('Registration Success:', response.data);
+        if (response.data.accessToken && response.data.id) {
+          localStorage.setItem('accessToken', response.data.accessToken);
+          navigate(`/profile/${response.data.id}`);
+        } else {
+          alert('No access token received. Please try again.');
+        }
+      })
+      .catch((error) => {
+        console.error('Registration Error:', error);
+        alert('Registration failed. Please try again.');
+      });
+  };
 
-            // Check if accessToken exists in the response
-            if (response.data.accessToken && response.data.id) {
-                // Store the access token in localStorage
-                sessionStorage.setItem('accessToken', response.data.accessToken);
-                // Navigate to the profile page
-                navigate(`/profile/${response.data.id}`);
-            } else {
-                alert('No access token received. Please try again.');
-            }
-        })
-        .catch((error) => {
-            console.error('Registration Error:', error);
-            alert('Registration failed. Please try again.');
+  const handleGoogleSignIn = async () => {
+    try {
+      if (!auth2Ref.current) {
+        console.error("Google Auth2 not initialized");
+        return; // Prevent execution if auth2 is not ready
+      }
+
+      const googleUser = await auth2Ref.current.signIn();
+      const id_token = googleUser.getAuthResponse().id_token;
+
+      const response = await axios.post('http://localhost:3001/users/google-signup', { id_token });
+
+      if (response.data.accessToken && response.data.id) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+        navigate(`/profile/${response.data.id}`);
+      } else {
+        alert('Failed to sign in with Google. Please try again.');
+      }
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+      alert('Google Sign-In failed. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    const initClient = () => {
+      gapi.load('client:auth2', () => {
+        gapi.auth2.init({
+          client_id: '1091135261905-gms21fiehp0gok4ke1r2r23jrtmsoq6g.apps.googleusercontent.com', // Replace with your client ID
+        }).then((auth) => {
+          auth2Ref.current = auth;
+          console.log("Google Auth2 initialized:", auth2Ref.current);
+        }).catch((error) => {
+          console.error("Failed to initialize Google Auth2:", error);
         });
-};
+      });
+    };
 
+    const loadGoogleApi = () => {
+      gapi.load('client', initClient);
+    };
+
+    loadGoogleApi();
+  }, []);
+
+  const handleGithubSignIn = () => {
+    window.open('http://localhost:3001/users/github', '_self');
+  };
+  
+  
   return (
     <div className="login-page-wrapper">
       <div className="login-container">
         <h2 className="form-title">Sign up with</h2>
         <div className="social-login">
-          <button className="social-button">
+          <button className="social-button" onClick={handleGoogleSignIn}>
             <img src={google} alt="Google" className="social-icon" />
             Google
           </button>
@@ -67,7 +115,7 @@ function SignUpPage() {
             <img src={facebook} alt="Facebook" className="social-icon" />
             Facebook
           </button>
-          <button className="social-button">
+          <button className="social-button" onClick={handleGithubSignIn}>
             <img src={github} alt="GitHub" className="social-icon" />
             Github
           </button>

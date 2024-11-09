@@ -1,10 +1,10 @@
 import React from 'react';
 import Statistics from './Statistics';
 
-const Sidebar = () => {
+const Sidebar = ({ setSortOption, setIsAscending, sortOption, isAscending }) => {
     return (
         <aside className="sidebar">
-            <Statistics />
+            <Statistics setSortOption={setSortOption} setIsAscending={setIsAscending} sortOption={sortOption} isAscending={isAscending}/>
         </aside>
     );
 };

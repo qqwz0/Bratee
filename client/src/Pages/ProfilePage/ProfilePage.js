@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, Link } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { useParams } from "react-router-dom";
 
 import ProfileHeader from './Components/Header/ProfileHeader';
 import Navbar from '../../Components/Navbar/Navbar';
-import BookModal from './Components/Modal/ChangeBookModal';
 import CreateBook from './Components/CreateBookModal/CreateBookModal';
 import Sidebar from './Components/Sidebar';
 import MainContent from './Components/MainContent';
@@ -18,7 +15,9 @@ function ProfilePage() {
     const [user, setUser] = useState(null);
     const [items, setItems] = useState([]); // State for storing books taken by the userv
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const [filterText, setFilterText] = useState(""); // Text for filtering by title or author
+    const [sortOption, setSortOption] = useState("Назвою (A - Z)"); // Default sort option
+    const [isAscending, setIsAscending] = useState(true); // Default ascending order
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -48,13 +47,43 @@ function ProfilePage() {
         setItems(prevItems => [...prevItems, newBook]); // Add the new book to the existing items
     };
 
+    const filteredItems = items.filter(item => {
+        const titleMatch = item.title && item.title.toLowerCase().includes(filterText.toLowerCase());
+        const authorMatch = item.Author?.full_name && item.Author?.full_name.toLowerCase().includes(filterText.toLowerCase());
+        return titleMatch || authorMatch; // Match either title or author
+    });
+
+    const sortItems = (items) => {
+        return [...items].sort((a, b) => {
+            if (sortOption === "Назвою (A - Z)") {
+                return isAscending
+                    ? a.title.localeCompare(b.title)
+                    : b.title.localeCompare(a.title);
+            } else if (sortOption === "Датою додавання в бібліотеці") {
+                return isAscending
+                    ? new Date(a.CreatedAt) - new Date(b.CreatedAt)
+                    : new Date(b.CreatedAt) - new Date(a.CreatedAt);
+            } else if (sortOption === "Рейтингом") {
+                return isAscending ? a.rating - b.rating : b.rating - a.rating;
+            }
+            return 0;
+        });
+    };
+
+    const sortedFilteredItems = sortItems(filteredItems); // Sort the filtered items
+
     return (
         <div className="profile-page">
             <Navbar className="navbar" /> {/* Navbar at the top */}
-            <ProfileHeader className="profile-header" nickname={user?.nickname} email={user?.email} /> {/* Profile header */}
+            <ProfileHeader className="profile-header" nickname={user?.nickname} email={user?.email} pfp={user?.profilePicture}/> {/* Profile header */}
             <div className="flex-container">
-                <Sidebar /> {/* Sidebar on the left */}
-                <MainContent items={items} setItems={setItems} openCreateBookModal={openCreateBookModal}/> {/* Main content area */}
+                <Sidebar 
+                setSortOption={setSortOption} 
+                setIsAscending={setIsAscending} 
+                sortOption={sortOption}
+                isAscending={isAscending}
+                /> 
+                <MainContent items={sortedFilteredItems} setItems={setItems} openCreateBookModal={openCreateBookModal} setFilterText={setFilterText}/> {/* Main content area */}
             </div>
             {isModalOpen && (
             <CreateBook isOpen={isModalOpen} onClose={toggleModal} onAddBook={onAddBook}/>

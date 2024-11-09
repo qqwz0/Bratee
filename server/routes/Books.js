@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Books, Authors, Genres } = require('../models');
 const { validateToken } = require('../middleware/AuthMiddleware')
+const { Op, fn, col } = require('sequelize');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -43,7 +44,7 @@ const upload = multer({
 router.get('/', async (req, res) => {
     try {
         const listOfBooks = await Books.findAll({
-            attributes: ['id', 'title', 'cover', 'AuthorId'], // Only include necessary book attributes
+            attributes: ['id', 'title', 'cover', 'AuthorId', 'rating', 'createdAt'], // Only include necessary book attributes
             include: [{
                 model: Authors,
                 attributes: ['full_name'], // Include only the full name of the author
@@ -90,7 +91,7 @@ router.get('/byUserId/:userId', async (req, res) => {
     try {
         const booksByUser = await Books.findAll({
             where: { UserId: userId }, // Filter books by UserId
-            attributes: ['id', 'title', 'cover', 'CreatedAt', 'description' ], // Include necessary book attributes
+            attributes: ['id', 'title', 'cover', 'CreatedAt', 'description', 'rating' ], // Include necessary book attributes
             include: [{
                 model: Authors,
                 attributes: ['full_name'], // Include only the full name of the author
@@ -176,6 +177,49 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: 'An error occurred while deleting the book' });
+    }
+});
+
+router.put("/rating/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { rating } = req.body;
+  
+      // Update the rating in your database (adjust for your database)
+      await Books.update({ rating }, { where: { id } });
+  
+      res.status(200).json({ message: "Rating updated successfully", rating: rating });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to update rating" });
+    }
+  });
+
+  router.get('/search', async (req, res) => {
+    const { title } = req.query;
+
+    try {
+        // Use LOWER function for case-insensitive matching on title
+        const books = await Books.findAll({
+            where: {
+                title: {
+                    [Op.like]: fn('LOWER', `%${title.toLowerCase()}%`)  // Case-insensitive partial matching
+                }
+            },
+            include: [{
+                model: Authors,
+                attributes: ['full_name'],
+            }],
+        });
+
+        // Check if books were found
+        if (books.length === 0) {
+            return res.status(404).json({ error: 'No books found with the specified title' });
+        }
+
+        res.json(books);
+    } catch (error) {
+        console.error("Error searching for books:", error);
+        res.status(500).json({ error: 'Error searching for books' });
     }
 });
 

@@ -26,10 +26,16 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
         cover: Yup.mixed().required('Cover image is required'),
     });
 
-    const onSubmit = async (data, { resetForm }) => {
+    const onSubmit = async (data, { resetForm, setFieldError }) => {
         try {
-            const accessToken = sessionStorage.getItem('accessToken');
+            const accessToken = localStorage.getItem('accessToken');
             
+            const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (data.cover && !allowedFileTypes.includes(data.cover.type)) {
+                setFieldError("cover", "Будь ласка, завантажте правильний формат (jpeg, jpg, png, gif).");
+                return;
+            }
+
             // Handling author creation or fetching
             let authorResponse = await axios.get("http://localhost:3001/authors", {
                 headers: { accessToken }
@@ -74,7 +80,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             });
             
             const newBook = response.data;
-            newBook.Author = {full_name: data.AuthorId};
+            newBook.Author = { full_name: data.AuthorId };
             newBook.CreatedAt = new Date().toISOString();
 
             onAddBook(newBook);
@@ -82,14 +88,21 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             setNotification('Book uploaded successfully!'); // Set success message
             resetForm(); // Clear the form fields
 
-
         } catch (err) {
-            if (err.response && err.response.status === 403) {
-                setNotification('Unauthorized: Please log in to add a book.');
+            if (err.response) {
+                // If there is a response from the server, show the error message
+                const errorMessage = err.response.data.message || 'Error uploading the book. Please try again.';
+                setNotification(errorMessage);
+                
+                // Specific field error for cover
+                if (errorMessage.toLowerCase().includes('cover')) {
+                    setFieldError("cover", "Error uploading the cover image. Please try again.");
+                }
             } else {
-                console.error("Error uploading the book:", err);
+                // If there is no response, use a generic message
                 setNotification('Error uploading the book. Please try again.');
             }
+            console.error("Error uploading the book:", err);
         }
     };
 

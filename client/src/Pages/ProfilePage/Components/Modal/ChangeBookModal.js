@@ -7,17 +7,15 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [cover, setCover] = useState('');
-    const [coverFile, setCoverFile] = useState(null); // Holds the uploaded file
+    const [coverFile, setCoverFile] = useState(null);
 
-    // Base URL for images stored on the server
     const serverUrl = 'http://localhost:3001/';
-    
 
     useEffect(() => {
         if (book) {
             setTitle(book.title);
             setDescription(book.description);
-            setCover(book.cover ? `${serverUrl}${book.cover}` : ''); // Prepend server URL to cover path
+            setCover(book.cover ? `${serverUrl}${book.cover}` : '');
         }
     }, [book]);
 
@@ -25,21 +23,29 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
         const file = e.target.files[0];
         if (file) {
             setCoverFile(file);
-            setCover(URL.createObjectURL(file)); // This shows the preview of the new cover image immediately
+            setCover(URL.createObjectURL(file));
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const updatedData = {
-            id: book.id,
-            title,
-            description,
-            coverFile,
-        };
-        console.log("Data to update:", updatedData);
-        onUpdate(updatedData); // This will call the updated handleUpdate function in ListItem
-        onClose();
+        if (window.confirm("Are you sure you want to update this book?")) {
+            const updatedData = {
+                id: book.id,
+                title,
+                description,
+                coverFile,
+            };
+            onUpdate(updatedData);
+            onClose();
+        }
+    };
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this book?")) {
+            onDelete();
+            onClose();
+        }
     };
 
     if (!isOpen) return null;
@@ -77,7 +83,9 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
                     </div>
                     <div className='update-delete'>
                         <button type="submit" className='primary-button update-button'>Update</button>
-                        <button type="button" onClick={onDelete} className='primary-button delete-button'><FontAwesomeIcon icon={faTrash} style={{ marginRight: '5px' }}/>Delete book</button>
+                        <button type="button" onClick={handleDelete} className='primary-button delete-button'>
+                            <FontAwesomeIcon icon={faTrash} style={{ marginRight: '5px' }}/>Delete book
+                        </button>
                     </div>
                 </form>
             </div>

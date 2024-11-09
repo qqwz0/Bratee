@@ -5,7 +5,7 @@ import "./BookPage.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import ReviewModal from "./ReviewModal"; // Import your modal component
-
+ 
 function BookPage() {
   const { id } = useParams();
   const [bookObject, setBookObject] = useState({});
@@ -33,7 +33,7 @@ function BookPage() {
   }, [id]);
 
   const handleAddReview = async (newReview) => {
-    const accessToken = sessionStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem('accessToken');
   
     if (!accessToken) {
       alert("You must be logged in to add a review.");
@@ -49,13 +49,21 @@ function BookPage() {
           headers: { accessToken },
         }
       );
+
+      console.log('New review data:', response.data);
   
       // Update the reviews state with the complete review object from the server
       setReviews((prev) => [...prev, response.data]);
+
+      const updatedAverageRating = calculateAverageRating([...reviews, response.data]);
+      
+      await axios.put(`http://localhost:3001/books/rating/${id}`, {rating: updatedAverageRating});
+
     } catch (err) {
       console.error("Error adding review:", err);
       alert("Error adding review. Please try again.");
     }
+    
   };
   
   // Calculate the average rating
@@ -127,8 +135,12 @@ function BookPage() {
           {/* Render reviews here */}
           {reviews.map((review, index) => (
             <div className="review-card" key={index}>
-              <img src="https://via.placeholder.com/100" alt="Reviewer" className="profile-pic" />
-              <h3>{review.nickname}</h3> 
+              <img
+               src={review.User?.profilePicture ? `http://localhost:3001/${review.User.profilePicture}` : `http://localhost:3001/pfps/311e7ad01e414f0821610c9c4f7a48ae.jpg`}
+               alt="Reviewer"
+               className="profile-pic"
+              />
+              <h3>{review.User?.nickname}</h3> 
               <div className="review-rating">
                 {Array.from({ length: review.rating }, (_, i) => (
                   <span key={i}>&#9733;</span>

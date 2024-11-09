@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/covers', express.static(path.join(__dirname, 'covers')));
+app.use('/pfps', express.static(path.join(__dirname, 'pfps')))
 
 const db = require('./models');
 const port = 3001;

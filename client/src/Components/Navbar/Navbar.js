@@ -17,8 +17,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import {jwtDecode} from 'jwt-decode';
 
-const getUserId = () => {
-  const token = sessionStorage.getItem('accessToken');
+export const getUserId = () => {
+  const token = localStorage.getItem('accessToken');
   if (!token) {
     console.warn('No access token found');
     return null; // Early return if no token found
@@ -42,12 +42,12 @@ const getUserId = () => {
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
-  const accessToken = sessionStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('accessToken');
   const userId = getUserId();
   const navigate = useNavigate();
 
   const handleLogOut = () => {
-    sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('accessToken');
     navigate('/');
   };
 
@@ -83,7 +83,7 @@ const Navbar = () => {
       <div className="navbar-links-container">
         <Link to='/'>Home</Link>
         <Link to='/search'>Search</Link>
-        <Link to='/createbook'>Add a book</Link>
+        {/* <Link to='/createbook'>Add a book</Link> */}
         {/* Conditional rendering based on accessToken */}
         {accessToken ? (
           <>

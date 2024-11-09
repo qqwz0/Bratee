@@ -14,7 +14,14 @@
     background-color: #ddd;
     border-radius: 50%;
     margin-right: 15px;
+    overflow: hidden;
   }
+
+  .profile-header .profile-picture .item-image {
+    width: 100%; /* Make the image fill the width of the container */
+    height: 100%; /* Make the image fill the height of the container */
+    object-fit: cover; /* Ensures the image covers the div without stretching */
+}
   
   .profile-header .profile-info h2 {
     margin: 0;
@@ -75,7 +82,7 @@
   .profile-info-container {
     width: 100%;
     display: flex;
-
+    justify-content: space-between;
   }
 
   .profile-header .separator {
@@ -83,4 +90,27 @@
     border-top: 1px solid #ddd;
     margin: 1rem 0;
     width: 100%;
+}
+
+.settings-icon-container {
+  margin-top: 10px;
+}
+
+.settings-icon {
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+.profile-pic-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-pic-container img{
+  height: 5rem !important;
+}
+
+.remove-pic-button {
+  cursor: pointer;
 }

@@ -143,7 +143,7 @@
     font-size: 1.2rem;
   }
   
-  .book-card-text {
+  /* .book-card-text {
     justify-content: center;
     display: flex;
     width: 100%;
@@ -152,7 +152,7 @@
     align-items: center;
     font-weight: 700;
     color: #515151;
-  }
+  } */
 
   .book-cover {
     width: 100%;
@@ -160,25 +160,12 @@
     object-fit: cover;
   }
 
-  .book-card-text {
-    height: 60px; /* Fixed height initially */
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limit to 2 lines */
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    white-space: normal;
-    transition: all 0.3s ease-in-out;
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .book-card:hover .book-card-text {
-    height: auto; /* Expand height to fit content */
-    overflow: visible; /* Allow text to fully show */
-    -webkit-line-clamp: unset; /* Disable ellipsis */
-    display: block; /* Switch display to block to allow wrapping */
-  }
+  /* .book-card:hover .book-card-text {
+    height: auto; 
+    overflow: visible; 
+    -webkit-line-clamp: unset;
+    display: block;
+  } */
 
 .react-multi-carousel-track {
   display: flex;
@@ -198,4 +185,158 @@
   font-size: 15px;
   padding: 0.8rem 1rem;
 }
-  
+
+.book-grid-container {
+  padding-top: 0px;
+  margin-bottom: 3rem;
+}
+
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Display exactly 5 books per row */
+  gap: 20px;
+}
+
+.book-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.book-card:hover {
+  transform: scale(1.05);
+}
+
+.book-cover {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.book-card-text {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, .8) 0, rgba(0, 0, 0, .01));
+  color: #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+.book-card-text {
+  height: 60px; 
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: normal;
+  transition: all 0.3s ease-in-out;
+  padding: 10px;
+  font-size: 14px;
+
+}
+
+.book-card-text h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #fff;
+}
+
+.book-card-text p {
+  font-size: 14px;
+  margin: 5px 0 0;
+  color: #fff;
+}
+
+.tooltip-content {
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+mouseenter
+.tooltip-content h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.tooltip-content hr {
+  border: 0;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin: 10px 0;
+}
+
+.tooltip-content label {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.tooltip-content input[type="radio"] {
+  margin-right: 8px;
+  accent-color: #ff9900; /* For customizing the radio button color */
+}
+
+.filter-button {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  font-size: 15px;
+  padding: 0.8rem 1rem;
+  border-radius: 30px;
+  transition: 0.3s;
+}
+
+.filter-button:hover {
+  background-color: #9747ff5e;
+}
+
+.tippy-box[data-theme~="custom"] {
+  background-color: rgba(0, 0, 0, 0); /* White background like in the image */
+  border-radius: 8px;
+  padding: 0;
+  border: none; /* Remove any border */
+}
+
+.no-books-message {
+  background-color: white;
+  border-radius: 20px;
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+}
+
+.no-books-message p {
+  font-size: 30px;
+}
+
+@media (max-width: 1200px) {
+  .book-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 books per row on medium screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .book-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 books per row on small screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .book-grid {
+    grid-template-columns: 1fr; /* 1 book per row on extra small screens */
+  }
+}

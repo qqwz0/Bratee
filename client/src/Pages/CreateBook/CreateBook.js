@@ -30,7 +30,7 @@ function CreateBook() {
 
     const onSubmit = async (data, { resetForm }) => {
         try {
-            const accessToken = sessionStorage.getItem('accessToken');
+            const accessToken = localStorage.getItem('accessToken');
             // Handling author creation or fetching
             let authorResponse = await axios.get("http://localhost:3001/authors", {
                 headers: { accessToken }
