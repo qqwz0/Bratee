@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     Books.belongsTo(models.Users, {
       foreignKey: { allowNull: false },
     });
+    Books.hasMany(models.LikedBooks, { foreignKey: 'bookId', as: 'likedBooks' });
   };
 
   return Books;

@@ -28,6 +28,9 @@ app.use("/reviews", reviewsRouter);
 const usersRouter = require('./routes/Users');
 app.use("/users", usersRouter);
 
+const likedBooksRouter = require('./routes/LikedBooks');
+app.use("/likedbooks", likedBooksRouter);
+
 
 db.sequelize.sync().then(() => {
     app.listen(port, () => {

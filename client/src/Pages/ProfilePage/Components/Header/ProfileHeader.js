@@ -194,9 +194,9 @@ const ProfileHeader = ({ nickname: initialNickname, email, pfp:initialPfp }) => 
       <hr className="separator" />
       <div className="header">
         <ul className="nav-list">
-          <li className="nav-item"><Link to={`/profile/${userId}`}>Added books</Link></li>
-          <li className="nav-item"><a href="#">Collection</a></li>
-          <li className="nav-item"><Link to={`/profile/${userId}/reviews`}>Reviews</Link></li>
+          <li className="nav-item"><Link to={`/profile/${userId}/collections`}>Колекції</Link></li>
+          <li className="nav-item"><Link to={`/profile/${userId}`}>Додані книги</Link></li>
+          <li className="nav-item"><Link to={`/profile/${userId}/reviews`}>Відгуки</Link></li>
         </ul>
       </div>
 

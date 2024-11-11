@@ -306,6 +306,7 @@ mouseenter
   border-radius: 8px;
   padding: 0;
   border: none; /* Remove any border */
+  box-shadow: none;
 }
 
 .no-books-message {

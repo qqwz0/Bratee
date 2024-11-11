@@ -5,18 +5,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
-const ListItem = ({ item, setItems, onDelete }) => {
+const ListItem = ({ item, setItems, onDelete, variant }) => {
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [localTitle, setLocalTitle] = useState(item.title);
 
-    const formattedDate = item.CreatedAt
-        ? new Date(item.CreatedAt).toLocaleDateString('uk-UA', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-        })
-        : 'N/A';
+    console.log("variant:", variant);
+    console.log("item.updatedAt:", item.CreatedAt);
+
+    const formattedDate = variant === 'withCategories' && item.updatedAt
+    ? new Date(item.updatedAt).toLocaleDateString('uk-UA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    })
+    : item.CreatedAt
+    ? new Date(item.CreatedAt).toLocaleDateString('uk-UA', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    })
+    : 'N/A'; // Fallback to "N/A" only if neither date is available
 
     const handleUpdate = async (updatedData) => {
         const formData = new FormData();
@@ -99,11 +108,23 @@ const ListItem = ({ item, setItems, onDelete }) => {
                 </div>
             </div>
             <div className="item-date">
-                Додано {formattedDate}
+                {variant === 'withCategories' 
+                    ? <>
+                        Додано в колекцію
+                        <br />
+                        {formattedDate}
+                    </>
+                    : <>
+                    Додано
+                    <br />
+                    {formattedDate}
+                </>}
             </div>
-            <div className="item-options" onClick={() => setIsModalOpen(true)}>
-                <FontAwesomeIcon icon={faEllipsisH} />
-            </div>
+                {variant !== 'withCategories' && (
+                    <div className="item-options" onClick={() => setIsModalOpen(true)}>
+                        <FontAwesomeIcon icon={faEllipsisH} />
+                    </div>
+                )}
             <BookModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}

@@ -6,6 +6,8 @@ const { OAuth2Client } = require('google-auth-library');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 
@@ -190,16 +192,14 @@ router.put('/:id', upload.single('profilePicture'), async (req, res) => {
     const profilePicturePath = req.file ? `pfps/${req.file.filename}` : null;
 
     try {
-        // Update the user
-        await Users.update(
-            {
-                nickname: nickname,
-                profilePicture: profilePicturePath
-            },
-            {
-                where: { id: userId }
-            }
-        );
+        // Build the fields to update, only including profilePicture if a file was uploaded
+        const updatedFields = { nickname };
+        if (profilePicturePath) {
+            updatedFields.profilePicture = profilePicturePath;
+        }
+
+        // Update the user with the selected fields
+        await Users.update(updatedFields, { where: { id: userId } });
 
         // Retrieve the updated user
         const updatedUser = await Users.findByPk(userId);
@@ -207,12 +207,75 @@ router.put('/:id', upload.single('profilePicture'), async (req, res) => {
         // Return the full updated user information
         return res.json({
             message: 'User updated successfully',
-            user: updatedUser // This will include the full user information
+            user: updatedUser, // This will include the full user information
         });
     } catch (error) {
         console.error('Update error:', error);
         return res.status(500).json({ error: "An error occurred while updating the user." });
     }
+});
+
+router.post('/forgot-password', async (req, res) => {
+    const { email } = req.body;
+    const user = await Users.findOne({ where: { email } });
+
+    if (!user) {
+        return res.status(404).json({ error: "User not found." });
+    }
+
+    // Generate a reset token and expiry time
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetTokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
+
+    // Save the token and expiry time to the user record
+    await user.update({ resetToken, resetTokenExpiry });
+
+    // Send email with token
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'bratee.kursova@gmail.com', // replace with your email
+            pass: 'hell0w0r1d3'   // replace with your email password
+        }
+    });
+
+    const mailOptions = {
+        to: email,
+        from: 'bratee.kursova@gmail.com',
+        subject: 'Password Reset',
+        text: `Please click on the following link to reset your password: 
+               http://localhost:3000/reset-password/${resetToken}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error('Error sending email:', error);
+            return res.status(500).json({ error: 'Error sending email.' });
+        }
+        res.json({ message: 'Password reset email sent.' });
+    });
+});
+
+router.post('/reset-password/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    const user = await Users.findOne({ where: { resetToken: token, resetTokenExpiry: { [Op.gt]: Date.now() } } });
+
+    if (!user) {
+        return res.status(400).json({ error: "Token is invalid or has expired." });
+    }
+
+    try {
+        const hash = await bcrypt.hash(password, 10);
+        await user.update({ password: hash, resetToken: null, resetTokenExpiry: null });
+        res.json({ message: "Password has been reset successfully." });
+    } catch (err) {
+        console.error('Error hashing password:', err);
+        res.status(500).json({ error: "Error resetting password." });
+    }
+
+    res.json({ message: "Password has been reset successfully." });
 });
 
 
