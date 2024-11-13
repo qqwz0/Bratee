@@ -10,17 +10,14 @@ const ListItem = ({ item, setItems, onDelete, variant }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [localTitle, setLocalTitle] = useState(item.title);
 
-    console.log("variant:", variant);
-    console.log("item.updatedAt:", item.CreatedAt);
-
     const formattedDate = variant === 'withCategories' && item.updatedAt
     ? new Date(item.updatedAt).toLocaleDateString('uk-UA', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
     })
-    : item.CreatedAt
-    ? new Date(item.CreatedAt).toLocaleDateString('uk-UA', {
+    : item.createdAt
+    ? new Date(item.createdAt).toLocaleDateString('uk-UA', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
@@ -90,8 +87,20 @@ const ListItem = ({ item, setItems, onDelete, variant }) => {
         return <div className="rating-stars">{stars}</div>;
     };
 
+    const ribbonStyle = {
+        display: 'flex',
+        backgroundColor: 'red',
+        width: '50px', 
+    };
+
+    console.log(item);
+    
+
     return (
-        <div className="list-item">
+        <div className="list-item" style={{ position: 'relative' }}> {/* Set position to relative for the main container */}
+            {item.status === 'rejected' && (
+                <div style={ribbonStyle}></div> // Render the ribbon if status is "rejected"
+            )}
             <div className="item-content">
                 <img
                     src={item.cover ? `http://localhost:3001/${item.cover}` : ''}
@@ -100,9 +109,9 @@ const ListItem = ({ item, setItems, onDelete, variant }) => {
                 />
                 <div className="item-details">
                     <Link to={`/book/${item.id}`} className="item-title">
-                      <span style={{ display: 'flex', alignItems: 'center' }}>
-                        {item.title} / {renderStars(item.rating)} {/* Updated title display */}
-                      </span>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                        {item.title} / {renderStars(item.rating)}
+                    </span>
                     </Link>
                     <div className="item-author">{item.Author?.full_name}</div>
                 </div>

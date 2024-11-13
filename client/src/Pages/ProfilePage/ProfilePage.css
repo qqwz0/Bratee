@@ -81,6 +81,8 @@
     align-items: center; /* Center items vertically */
     border-bottom: 1px solid #ddd; /* Add bottom border */
     padding: 1rem 0; /* Vertical padding */
+    position: relative; /* Ensure the position is relative for the ribbon */
+    min-height: 6rem; /* Set a minimum height to ensure the ribbon has space */
 }
 
 /* Item content styles */

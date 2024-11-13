@@ -17,6 +17,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0.0, // Default rating is 0
     },
+    status: {
+      type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'pending',
+            validate: {
+              isIn: [['pending', 'pending-update', 'approved', 'rejected']] // Define the valid categories
+            }
+    },
+    updated_book_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null, 
+    },
   });
 
   Books.associate = (models) => {

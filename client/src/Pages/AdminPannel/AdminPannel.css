@@ -1,0 +1,136 @@
+.admin-panel {
+    padding: 20px;
+  }
+  
+  .admin-panel-title {
+    text-align: center;
+    margin-top: 20px;
+    color: #333;
+  }
+  
+  .books-table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .books-table th,
+  .books-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    max-width: 200px; /* Limit cell width */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+  }
+  
+  .books-table th {
+    background-color: #007BFF;
+    color: white;
+  }
+  
+  .books-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .book-cover {
+    width: 50px;
+    height: 70px;
+    object-fit: cover;
+  }
+  
+  .approve-btn, .reject-btn {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .approve-btn {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .reject-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .approve-btn:hover {
+    background-color: #218838;
+  }
+  
+  .reject-btn:hover {
+    background-color: #c82333;
+  }
+  
+  .approve-btn:active {
+    background-color: #1e7e34;
+  }
+  
+  .reject-btn:active {
+    background-color: #bd2130;
+  }
+  
+  .loading-text, .error-text {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .error-text {
+    color: #d9534f;
+  }
+  
+  .loading-text {
+    color: #007BFF;
+  }
+  
+  p a {
+    color: #007BFF;
+    text-decoration: none;
+  }
+  
+  p a:hover {
+    text-decoration: underline;
+  }
+
+  .books-tr th {
+    text-align: center;
+  }
+
+  .admin-button-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .truncated-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* Limits to 1 line */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust based on your layout */
+  }
+  
+  /* Show full text on hover */
+  .truncated-text:hover {
+    -webkit-line-clamp: unset;
+    overflow: visible;
+    white-space: normal;
+  }
+  
+  /* Optionally, for click-to-toggle functionality (if needed) */
+  .show-more {
+    cursor: pointer;
+    color: #007BFF;
+  }
+  
+  .show-more:hover {
+    text-decoration: underline;
+  }
