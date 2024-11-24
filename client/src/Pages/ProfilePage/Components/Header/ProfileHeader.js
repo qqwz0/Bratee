@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './ProfileHeader.css';
-import {Link} from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getUserId } from '../../../../Components/Navbar/Navbar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -29,8 +29,32 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
   };
 
   const handleRemovePicture = () => {
-    setProfilePicture(null);
-    setProfilePictureFile(null);
+    // Show confirmation to the user before proceeding with the deletion
+    if (window.confirm("Are you sure you want to remove your profile picture?")) {
+      // Send the flag to delete the profile picture along with the nickname (or other fields)
+      const formData = new FormData();
+      formData.append('nickname', nickname);
+      formData.append('deleteProfilePicture', 'true'); // Flag to delete the profile picture
+  
+      // Send the update request to the backend
+      axios.put(`http://localhost:3001/users/${userId}`, formData, {
+        headers: { accessToken },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log('Profile picture removed');
+          onUpdate({
+            nickname: response.data.user.nickname,
+            profilePicture: null,  // Update frontend to reflect the removal
+          });
+        } else {
+          console.error('Failed to remove profile picture');
+        }
+      })
+      .catch((error) => {
+        console.error('Error removing profile picture', error);
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -92,11 +116,11 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
     <div className="modal-overlay">
       <div className="modal slim">
         <form onSubmit={handleSubmit} className="form-container slim-modal">
-          <h1>Edit User Info</h1>
+          <h1>Редагувати профіль</h1>
           <button onClick={onClose} className="close-modal-button">&times;</button>
           
           <div className="form-group">
-            <label>Nickname:</label>
+            <label>Нік:</label>
             <input
               type="text"
               value={nickname}
@@ -105,7 +129,7 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
           </div>
           
           <div className="form-group">
-            <label>Profile Picture:</label>
+            <label>Фото профілю:</label>
             {profilePicture && (
               <div className="profile-pic-container">
                 <img src={profilePicture} alt="Profile Preview" className="cover-preview" />
@@ -120,9 +144,9 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
           </div>
           
           <div className='update-delete'>
-            <button type="submit" className='primary-button update-button'>Update</button>
+            <button type="submit" className='primary-button update-button'>Оновити</button>
             <button type="button" onClick={onDelete} className='primary-button delete-button'>
-              <FontAwesomeIcon icon={faTrash} style={{ marginRight: '5px' }}/>Delete Account
+              <FontAwesomeIcon icon={faTrash} style={{ marginRight: '5px' }}/>Видалити
             </button>
           </div>
         </form>
@@ -132,24 +156,28 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
 };
 
 const ProfileHeader = ({ nickname: initialNickname, email, pfp:initialPfp }) => {
+  const { id: urlUserId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [nickname, setNickname] = useState(initialNickname);
   const [profilePicture, setProfilePicture] = useState(initialPfp);
   const accessToken = localStorage.getItem('accessToken');
+  const [isAdmin, setIsAdmin] = useState(false);
   const userId = getUserId();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/users/${userId}`, {
+        const response = await axios.get(`http://localhost:3001/users/${urlUserId}`, {
           headers: {
             accessToken
           },
         });
         if (response.status === 200) {
           const userData = response.data;
+          console.log(userData.isAdmin)
           setNickname(userData.nickname);
           setProfilePicture(userData.profilePicture);
+          setIsAdmin(userData.isAdmin)
         } else {
           console.error('Failed to fetch user data:', response.data.error);
         }
@@ -194,10 +222,14 @@ const ProfileHeader = ({ nickname: initialNickname, email, pfp:initialPfp }) => 
       <hr className="separator" />
       <div className="header">
         <ul className="nav-list">
-          <li className="nav-item"><Link to={`/profile/${userId}/collections`}>Колекції</Link></li>
-          <li className="nav-item"><Link to={`/profile/${userId}`}>Додані книги</Link></li>
-          <li className="nav-item"><Link to={`/profile/${userId}/reviews`}>Відгуки</Link></li>
+          <li className="nav-item"><Link to={`/profile/${urlUserId}/collections`}>Колекції</Link></li>
+          <li className="nav-item"><Link to={`/profile/${urlUserId}`}>Додані книги</Link></li>
+          <li className="nav-item"><Link to={`/profile/${urlUserId}/reviews`}>Відгуки</Link></li>
+          {isAdmin && (
+            <li className="nav-item"><Link to="/admin">Панель адміна</Link></li>
+        )}
         </ul>
+        
       </div>
 
       {/* Modal for editing user info */}

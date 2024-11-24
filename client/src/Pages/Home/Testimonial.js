@@ -11,40 +11,27 @@ const Testimonial = () => {
         <img src={AboutBackground} alt="" />
       </div>
       <div className="work-section-top">
-        <h1 className="primary-heading">Rate it!</h1>
+        <h1 className="primary-heading">Оцінюйте!</h1>
         <p className="primary-text">
-        Share your thoughts and rate your favorite books! 
-        Help others discover great reads by leaving your honest reviews and ratings.
+          Поділіться своїми думками та оцініть ваші улюблені книги! Допоможіть іншим
+          знайти чудові книги, залишаючи чесні відгуки та оцінки.
         </p>
       </div>
       <div className="testimonial-section-bottom">
-        {/* <img src={ProfilePic} alt="" />
-        <p>
-          Lorem ipsum dolor sit amet consectetur. Non tincidunt magna non et
-          elit. Dolor turpis molestie dui magnis facilisis at fringilla quam.
-        </p>
-        <div className="testimonials-stars-container">
-          <AiFillStar />
-          <AiFillStar />
-          <AiFillStar />
-          <AiFillStar />
-          <AiFillStar />
-        </div>
-        <h2>John Doe</h2> */}
-
+      
         <div className="book-review-card">
               <div className="book-details">
                 <img src={bookImage} alt="The 48 Laws of Power" className="book-image" />
                 <div className="book-info">
-                  <h3>The 48 Laws of Power</h3>
-                  <p>Robert Greene</p>
+                  <h3>48 законів влади</h3>
+                  <p>Роберт Грін</p>
                 </div>
               </div>
 
               <div className="review-section">
                 <img src={ProfilePic} alt="John Doe" className="user-image" />
                 <div className="review-info">
-                  <h4>John Doe</h4>
+                  <h4>Джон Доу</h4>
                   <div className="rating">
                   <AiFillStar />
                   <AiFillStar />
@@ -53,9 +40,9 @@ const Testimonial = () => {
                   <AiFillStar />
                   </div>
                   <p>
-                    This book was absolutely enlightening! It changed the way I think
-                    about leadership and influence. I highly recommend it to anyone
-                    looking to grow personally and professionally.
+                    Ця книга була абсолютно просвітлюючою! Вона змінила моє
+                    ставлення до лідерства та впливу. Я настійно рекомендую її
+                    кожному, хто хоче розвиватися особисто та професійно.
                   </p>
                 </div>
               </div>

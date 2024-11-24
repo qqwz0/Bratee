@@ -29,12 +29,13 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (window.confirm("Are you sure you want to update this book?")) {
+        if (window.confirm("Ви впевнені, що хочете оновити цю книгу?")) {
             const updatedData = {
                 id: book.id,
                 title,
+                coverFile: coverFile || book.cover,
+                userId: book.UserId,
                 description,
-                coverFile,
             };
             onUpdate(updatedData);
             onClose();
@@ -42,7 +43,7 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
     };
 
     const handleDelete = () => {
-        if (window.confirm("Are you sure you want to delete this book?")) {
+        if (window.confirm("Ви впевнені, що хочете видалити цю книгу?")) {
             onDelete();
             onClose();
         }
@@ -54,11 +55,11 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
         <div className="modal-overlay">
             <div className="modal slim">
                 <form onSubmit={handleSubmit} className="form-container slim-modal">
-                    <h1>Edit Book</h1>
+                    <h1>Редагувати книгу</h1>
                     <button onClick={onClose} className="close-modal-button">&times;</button>
                     
                     <div className="form-group">
-                        <label>Title:</label>
+                        <label>Назва:</label>
                         <input
                             type="text"
                             value={title}
@@ -67,24 +68,27 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
                     </div>
                     
                     <div className="form-group">
-                        <label>Cover Image:</label>
+                        <label>Обкладинка:</label>
                         {cover && (
-                            <img src={cover} alt="Cover Preview" className="cover-preview" />
+                            <img src={cover} alt="Перегляд обкладинки" className="cover-preview" />
                         )}
-                        <input id='cover' type="file" onChange={handleFileChange} />
+                        <input id="cover" type="file" onChange={handleFileChange} />
                     </div>
                     
                     <div className="form-group">
-                        <label>Description:</label>
+                        <label>Опис:</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
-                    <div className='update-delete'>
-                        <button type="submit" className='primary-button update-button'>Update</button>
-                        <button type="button" onClick={handleDelete} className='primary-button delete-button'>
-                            <FontAwesomeIcon icon={faTrash} style={{ marginRight: '5px' }}/>Delete book
+                    <div className="update-delete">
+                        <button type="submit" className="primary-button update-button">
+                            Оновити
+                        </button>
+                        <button type="button" onClick={handleDelete} className="primary-button delete-button">
+                            <FontAwesomeIcon icon={faTrash} style={{ marginRight: '5px' }} />
+                            Видалити
                         </button>
                     </div>
                 </form>

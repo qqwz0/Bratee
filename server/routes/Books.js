@@ -6,6 +6,7 @@ const { Op, fn, col } = require('sequelize');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { Sequelize } = require('../models');
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -40,30 +41,13 @@ const upload = multer({
     }
 });
 
-
-// router.get('/', async (req, res) => {
-//     try {
-//         const listOfBooks = await Books.findAll({
-//             attributes: ['id', 'title', 'cover', 'AuthorId', 'rating', 'createdAt'], // Only include necessary book attributes
-//             include: [{
-//                 model: Authors,
-//                 attributes: ['full_name'], // Include only the full name of the author
-//             }],
-//         });
-//         res.json(listOfBooks);
-//     } catch (error) {
-//         console.error("Error fetching books:", error);
-//         res.status(500).json({ error: 'Error fetching books' });
-//     }
-// });
-
 router.get('/', async (req, res) => {
     try {
         // Check if 'isAdmin' is passed as a query parameter
         const { isAdmin } = req.query;
 
         // Set the status filter based on the presence of 'isAdmin'
-        const statusFilter = isAdmin ? 'pending' : 'approved';
+        const statusFilter = isAdmin ? ['pending'] : ['approved', 'pending-update'];
 
         const listOfBooks = await Books.findAll({
             where: { status: statusFilter }, // Use the dynamic status filter
@@ -89,34 +73,52 @@ router.get('/', async (req, res) => {
     }
 });
 
-// router.get('/byId/:id', async (req, res) => {
-//     const id = req.params.id;
-//     try {
-//         // Find the book by primary key and include the Author and Genre
-//         const book = await Books.findByPk(id, {
-//             include: [
-//                 {
-//                     model: Authors,
-//                     attributes: ['id', 'full_name'], // Include author ID and full name
-//                 },
-//                 {
-//                     model: Genres, // Assuming you have a Genres model
-//                     attributes: ['name'], // Include genre ID and name
-//                 }
-//             ]
-//         });
+router.get('/updated-books', async (req, res) => {
+    try {
+        // Fetch all books with the "updatedata" status
+        const updatedBooks = await Books.findAll({
+            where: { status: 'updatedata' },
+            attributes: ['id', 'title', 'description', 'cover', 'updated_book_id', 'UserId'], // Include updated_book_id to check
+            include: [
+                {
+                    model: Users,
+                    attributes: ['email'],  // Ensure email is included
+                }
+            ]
+        });
 
-//         // Check if book exists
-//         if (!book) {
-//             return res.status(404).json({ error: 'Book not found' });
-//         }
+        const updatedBooksWithOriginal = await Promise.all(updatedBooks.map(async (updatedBook) => {
+            // For each "updatedata" book, find the original book using the updated_book_id field
+            const originalBook = await Books.findByPk(updatedBook.updated_book_id, {
+                attributes: ['title', 'description', 'cover']
+            });
 
-//         res.json(book);
-//     } catch (error) {
-//         console.error("Error fetching book details:", error);
-//         res.status(500).json({ error: 'Error fetching book details' });
-//     }
-// });
+            console.log(updatedBook.User); 
+
+            return {
+                updatedBookData: {
+                    id: updatedBook.id,
+                    title: updatedBook.title,
+                    description: updatedBook.description,
+                    cover: updatedBook.cover,
+                    email: updatedBook.Users ? updatedBook.Users.dataValues.email : null,
+                    userid: updatedBook.UserId
+                },
+                originalBookData: originalBook ? {
+                    title: originalBook.title,
+                    description: originalBook.description,
+                    cover: originalBook.cover,
+                } : null
+            };
+        }));
+
+        res.json(updatedBooksWithOriginal);
+    } catch (error) {
+        console.error("Error fetching updated books:", error);
+        res.status(500).json({ error: 'Error fetching updated books' });
+    }
+});
+
 
 router.get('/byId/:id', async (req, res) => {
     const id = req.params.id;
@@ -146,36 +148,15 @@ router.get('/byId/:id', async (req, res) => {
     }
 });
 
-// router.get('/byUserId/:userId', async (req, res) => {
-//     const userId = req.params.userId;
-//     try {
-//         const booksByUser = await Books.findAll({
-//             where: { UserId: userId }, // Filter books by UserId
-//             attributes: ['id', 'title', 'cover', 'CreatedAt', 'description', 'rating' ], // Include necessary book attributes
-//             include: [{
-//                 model: Authors,
-//                 attributes: ['full_name'], // Include only the full name of the author
-//             }],
-//         });
-
-//         // Check if books were found
-//         if (!booksByUser.length) {
-//             return res.status(404).json({ error: 'No books found for this user' });
-//         }
-
-//         res.json(booksByUser);
-//     } catch (error) {
-//         console.error("Error fetching books by user ID:", error);
-//         res.status(500).json({ error: 'Error fetching books by user ID' });
-//     }
-// });
-
 router.get('/byUserId/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
         const booksByUser = await Books.findAll({
-            where: { UserId: userId }, // Filter books by UserId
-            attributes: ['id', 'title', 'cover', 'createdAt', 'description', 'rating', 'status'], // Include necessary attributes and status
+            where: {
+                UserId: userId, // Filter books by UserId
+                status: { [Sequelize.Op.ne]: 'updatedata' } // Exclude books with status 'updatedata'
+            },
+            attributes: ['id', 'title', 'cover', 'createdAt', 'description', 'rating', 'status', 'UserId'], // Include necessary attributes and status
             include: [{
                 model: Authors,
                 attributes: ['full_name'], // Include only the full name of the author
@@ -193,31 +174,6 @@ router.get('/byUserId/:userId', async (req, res) => {
         res.status(500).json({ error: 'Error fetching books by user ID' });
     }
 });
-
-// router.post('/', validateToken, upload.single('cover'), async (req, res) => {
-//     try {
-//         const { title, description, AuthorId, GenreId } = req.body;
-//         const userId = req.user.id;
-
-//         // If an image is uploaded, get the file path
-//         const coverPath = req.file ? `covers/${req.file.filename}` : null;
-
-//         // Create a new book entry in the database
-//         const newBook = await Books.create({
-//             title,
-//             description,
-//             AuthorId,
-//             GenreId,
-//             cover: coverPath,
-//             UserId: userId // Save the image path to the database
-//         });
-
-//         return res.status(201).json(newBook);
-//     } catch (error) {
-//         console.error("Error creating book:", error);
-//         return res.status(500).json({ error: 'Error creating book' });
-//     }
-// });
 
 router.post('/', validateToken, upload.single('cover'), async (req, res) => {
     try {
@@ -245,30 +201,35 @@ router.post('/', validateToken, upload.single('cover'), async (req, res) => {
 
 router.put('/:id', upload.single('cover'), async (req, res) => {
     const { id } = req.params;
-    const { title, description, genreId, authorId } = req.body;
-    
+    const updatedFields = req.body; // Contains form data excluding file
+
     try {
-        const book = await Books.findByPk(id);
-        if (!book) return res.status(404).json({ message: 'Book not found' });
+        // Define the cover path if a new file is uploaded
+        const coverPath = req.file ? `covers/${req.file.filename}` : updatedFields.cover;
 
-        // Handle cover path if a new file is uploaded
-        const coverPath = req.file ? `covers/${req.file.filename}` : book.cover;
-
-        await book.update({
-            title,
-            description,
+        // Create a new book entry with updated fields and 'rejected' status
+        const newBook = await Books.create({
+            title: updatedFields.title,
+            description: updatedFields.description,
             cover: coverPath,
-            genreId,
-            authorId,
-            status: 'pending-update' 
+            status: 'updatedata',
+            UserId: updatedFields.UserId, // Dummy user ID
+            GenreId: 1, // Dummy genre ID
+            updated_book_id: id
         });
 
-        return res.status(200).json({ message: 'Book updated successfully', book });
+        await Books.update(
+            { status: 'pending-update' },
+            { where: { id } }
+        );
+
+        res.status(200).json({ message: 'Update request submitted', updatedBookId: newBook.id });
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: 'An error occurred while updating the book' });
+        res.status(500).json({ error: 'Error processing update request' });
     }
 });
+
 
 // Delete Book API
 router.delete('/:id', async (req, res) => {
@@ -302,35 +263,6 @@ router.put("/rating/:id", async (req, res) => {
       res.status(500).json({ error: "Failed to update rating" });
     }
   });
-
-//   router.get('/search', async (req, res) => {
-//     const { title } = req.query;
-
-//     try {
-//         // Use LOWER function for case-insensitive matching on title
-//         const books = await Books.findAll({
-//             where: {
-//                 title: {
-//                     [Op.like]: fn('LOWER', `%${title.toLowerCase()}%`)  // Case-insensitive partial matching
-//                 }
-//             },
-//             include: [{
-//                 model: Authors,
-//                 attributes: ['full_name'],
-//             }],
-//         });
-
-//         // Check if books were found
-//         if (books.length === 0) {
-//             return res.status(404).json({ error: 'No books found with the specified title' });
-//         }
-
-//         res.json(books);
-//     } catch (error) {
-//         console.error("Error searching for books:", error);
-//         res.status(500).json({ error: 'Error searching for books' });
-//     }
-// });
 
 router.get('/search', async (req, res) => {
     const { title } = req.query;
@@ -374,6 +306,69 @@ router.post('/approve/:bookId', async (req, res) => {
     } catch (error) {
         console.error('Error approving book:', error);
         res.status(500).json({ error: 'Error approving book' });
+    }
+});
+
+router.put('/approve-update/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log('Received ID for approval:', id);
+
+    try {
+        
+        // Step 1: Find the book with status 'updatedata' by the provided ID
+        const updatedBook = await Books.findOne({ where: { id, status: 'updatedata' } });
+
+        if (!updatedBook) {
+            return res.status(404).json({ error: 'Book with update data not found' });
+        }
+
+        // Step 2: Find the original book using the updated_book_id
+        const originalBook = await Books.findOne({ where: { id: updatedBook.updated_book_id } });
+
+        if (!originalBook) {
+            return res.status(404).json({ error: 'Original book not found' });
+        }
+
+        // Step 3: Update the original book with the new fields from the updated book
+        await Books.update(
+            {
+                title: updatedBook.title,
+                description: updatedBook.description,
+                cover: updatedBook.cover,
+                status: 'approved' // Set the original book's status to 'approved' (or whatever status you want)
+            },
+            { where: { id: originalBook.id } }
+        );
+
+        // Step 4: Delete the updated book with status 'updatedata'
+        await Books.destroy({ where: { id: updatedBook.id } });
+
+        res.status(200).json({ message: 'Update applied successfully and update data book deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error applying update' });
+    }
+});
+
+router.delete('/reject-update/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log('Received ID for rejection:', id);
+
+    try {
+        // Find the book with the status 'updatedata' by the provided ID
+        const updatedBook = await Books.findOne({ where: { id, status: 'updatedata' } });
+
+        if (!updatedBook) {
+            return res.status(404).json({ error: 'Book with update data not found' });
+        }
+
+        // Delete the book with status 'updatedata'
+        await Books.destroy({ where: { id: updatedBook.id } });
+
+        res.status(200).json({ message: 'Book update rejected and update data deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error rejecting update' });
     }
 });
 

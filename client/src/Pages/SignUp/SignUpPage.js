@@ -1,19 +1,17 @@
 import React, { useEffect, useRef } from 'react';
-import './SignUp.css';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
-import google from '../../Assets/google.svg';
-import facebook from '../../Assets/facebook.svg';
-import github from '../../Assets/github.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import {gapi} from 'gapi-script';
+import { gapi } from 'gapi-script';
+
+import google from '../../Assets/google.svg';
 
 function SignUpPage() {
   const navigate = useNavigate();
-  const auth2Ref = useRef(null); // Use useRef to keep track of auth2
+  const auth2Ref = useRef(null);
 
   const initialValues = {
     nickname: '',
@@ -23,40 +21,40 @@ function SignUpPage() {
 
   const validationSchema = Yup.object({
     nickname: Yup.string()
-      .min(3, 'Username must be at least 3 characters')
-      .max(15, 'Username must not exceed 15 characters')
-      .required('Username is required.'),
+      .min(3, 'Імʼя користувача має містити як мінімум 3 символи')
+      .max(15, 'Імʼя користувача має містити не більше 15 символів')
+      .required('Імʼя користувача є обовʼязковим полем'),
     email: Yup.string()
-      .email('Invalid email format')
-      .required('Email is required'),
+      .email('Невірний формат електронної пошти')
+      .required('Електронна пошта є обовʼязковим полем'),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .max(20, 'Your password is too long')
-      .required('Password is required'),
+      .min(6, 'Пароль має містити як мінімум 6 символів')
+      .max(20, 'Пароль має містити не більше 20 символів')
+      .required('Пароль є обовʼязковим полем'),
   });
 
   const onSubmit = (data) => {
     axios.post('http://localhost:3001/users', data)
       .then((response) => {
-        console.log('Registration Success:', response.data);
+        console.log('Успішна реєстрація:', response.data);
         if (response.data.accessToken && response.data.id) {
           localStorage.setItem('accessToken', response.data.accessToken);
           navigate(`/profile/${response.data.id}`);
         } else {
-          alert('No access token received. Please try again.');
+          alert('Не отримано токен доступу. Спробуйте ще раз.');
         }
       })
       .catch((error) => {
-        console.error('Registration Error:', error);
-        alert('Registration failed. Please try again.');
+        console.error('Помилка реєстрації:', error);
+        alert('Реєстрація не вдалася. Спробуйте ще раз.');
       });
   };
 
   const handleGoogleSignIn = async () => {
     try {
       if (!auth2Ref.current) {
-        console.error("Google Auth2 not initialized");
-        return; // Prevent execution if auth2 is not ready
+        console.error("Google Auth2 не ініціалізовано");
+        return;
       }
 
       const googleUser = await auth2Ref.current.signIn();
@@ -68,11 +66,11 @@ function SignUpPage() {
         localStorage.setItem('accessToken', response.data.accessToken);
         navigate(`/profile/${response.data.id}`);
       } else {
-        alert('Failed to sign in with Google. Please try again.');
+        alert('Не вдалося увійти через Google. Спробуйте ще раз.');
       }
     } catch (error) {
-      console.error('Google Sign-In error:', error);
-      alert('Google Sign-In failed. Please try again.');
+      console.error('Помилка входу через Google:', error);
+      alert('Вхід через Google не вдався. Спробуйте ще раз.');
     }
   };
 
@@ -80,12 +78,12 @@ function SignUpPage() {
     const initClient = () => {
       gapi.load('client:auth2', () => {
         gapi.auth2.init({
-          client_id: '1091135261905-gms21fiehp0gok4ke1r2r23jrtmsoq6g.apps.googleusercontent.com', // Replace with your client ID
+          client_id: '1091135261905-gms21fiehp0gok4ke1r2r23jrtmsoq6g.apps.googleusercontent.com',
         }).then((auth) => {
           auth2Ref.current = auth;
-          console.log("Google Auth2 initialized:", auth2Ref.current);
+          console.log("Google Auth2 ініціалізовано:", auth2Ref.current);
         }).catch((error) => {
-          console.error("Failed to initialize Google Auth2:", error);
+          console.error("Помилка ініціалізації Google Auth2:", error);
         });
       });
     };
@@ -97,31 +95,18 @@ function SignUpPage() {
     loadGoogleApi();
   }, []);
 
-  const handleGithubSignIn = () => {
-    window.open('http://localhost:3001/users/github', '_self');
-  };
-  
-  
   return (
     <div className="login-page-wrapper">
       <div className="login-container">
-        <h2 className="form-title">Sign up with</h2>
+        <h2 className="form-title">Реєстрація через</h2>
         <div className="social-login">
           <button className="social-button" onClick={handleGoogleSignIn}>
             <img src={google} alt="Google" className="social-icon" />
             Google
           </button>
-          <button className="social-button">
-            <img src={facebook} alt="Facebook" className="social-icon" />
-            Facebook
-          </button>
-          <button className="social-button" onClick={handleGithubSignIn}>
-            <img src={github} alt="GitHub" className="social-icon" />
-            Github
-          </button>
         </div>
 
-        <p className="separator"><span>or</span></p>
+        <p className="separator"><span>або</span></p>
 
         <Formik
           initialValues={initialValues}
@@ -135,7 +120,7 @@ function SignUpPage() {
                 id="nickname"
                 name="nickname"
                 className="input-field"
-                placeholder="Nickname"
+                placeholder="Імʼя користувача"
               />
               <FontAwesomeIcon icon={faUser} />
               <ErrorMessage name="nickname" component="div" className="error-message" />
@@ -147,7 +132,7 @@ function SignUpPage() {
                 id="email"
                 name="email"
                 className="input-field"
-                placeholder="Email"
+                placeholder="Електронна пошта"
               />
               <FontAwesomeIcon icon={faEnvelope} />
               <ErrorMessage name="email" component="div" className="error-message" />
@@ -159,18 +144,18 @@ function SignUpPage() {
                 id="password"
                 name="password"
                 className="input-field"
-                placeholder="Password"
+                placeholder="Пароль"
               />
               <FontAwesomeIcon icon={faLock} />
               <ErrorMessage name="password" component="div" className="error-message" />
             </div>
 
-            <button type="submit" className="login-button">Sign Up</button>
+            <button type="submit" className="login-button">Зареєструватися</button>
           </Form>
         </Formik>
 
         <p className="signup-text">
-          Already have an account? <Link to="/login">Log in!</Link>
+          Вже маєте обліковий запис? <Link to="/login">Увійти!</Link>
         </p>
       </div>
     </div>

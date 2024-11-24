@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     rating: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
       defaultValue: 0.0, // Default rating is 0
     },
     status: {
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 'pending',
             validate: {
-              isIn: [['pending', 'pending-update', 'approved', 'rejected']] // Define the valid categories
+              isIn: [['pending', 'pending-update', 'approved', 'rejected', 'updatedata']] // Define the valid categories
             }
     },
     updated_book_id: {
@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
     Books.belongsTo(models.Users, {
       foreignKey: { allowNull: false },
     });
-    Books.hasMany(models.LikedBooks, { foreignKey: 'bookId', as: 'likedBooks' });
+    Books.hasMany(models.LikedBooks, { foreignKey: 'bookId', as: 'likedBooks', onDelete: 'CASCADE' });
   };
 
   return Books;

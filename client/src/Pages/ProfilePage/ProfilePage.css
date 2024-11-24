@@ -5,11 +5,6 @@
     height: 100vh;
 }
 
-/* Navbar styles */
-.navbar {
-    /* Add any specific navbar styles here */
-}
-
 /* Profile header styles */
 .profile-header {
     width: 100%;
@@ -225,4 +220,40 @@ input[type='radio']:checked:after {
 
 .category-count {
     margin-right: 5px;
+}
+
+.list-item.pending-update {
+    background-color: #fff8e1; /* light yellow background for pending */
+    border-left: 4px solid #ffc107; /* yellow border for pending */
+}
+
+.list-item.pending {
+    background-color: #fff8e1; /* light yellow background for pending */
+    border-left: 4px solid #ffc107; /* yellow border for pending */
+}
+
+.list-item.rejected {
+    background-color: #ffebee; /* light red background for rejected */
+    border-left: 4px solid #f44336; /* red border for rejected */
+}
+
+.pending-badge,
+.rejected-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.pending-badge {
+    background-color: #ffc107; /* yellow for pending */
+}
+
+.rejected-badge {
+    background-color: #f44336; /* red for rejected */
 }

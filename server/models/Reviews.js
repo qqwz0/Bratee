@@ -21,10 +21,12 @@ module.exports = (sequelize, DataTypes) => {
     
       Reviews.associate = (models) => {
         Reviews.belongsTo(models.Books, {
-            foreignKey: {allowNull: false} 
+            foreignKey: {allowNull: false},
+            onDelete: 'CASCADE',
         });
         Reviews.belongsTo(models.Users, { // Establish the association with Users
-          foreignKey: { allowNull: false }
+          foreignKey: { allowNull: false },
+          onDelete: 'CASCADE',
       });
       };
 

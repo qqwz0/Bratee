@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     LikedBooks.associate = (models) => {
-      LikedBooks.belongsTo(models.Books, { foreignKey: 'bookId', as: 'book' });
-      LikedBooks.belongsTo(models.Users, { foreignKey: 'userId', as: 'user' });
+      LikedBooks.belongsTo(models.Books, { foreignKey: 'bookId', as: 'book', onDelete: 'CASCADE', });
+      LikedBooks.belongsTo(models.Users, { foreignKey: 'userId', as: 'user', onDelete: 'CASCADE', });
     };
   
     return LikedBooks;

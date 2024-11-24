@@ -8,22 +8,22 @@ import './CreateBookModal.css';
 Modal.setAppElement('#root');
 
 function CreateBook({ isOpen, onClose, onAddBook }) {
-    const [notification, setNotification] = useState(''); // State for notification
+    const [notification, setNotification] = useState(''); // Стан для сповіщення
 
     const initialValues = {
         title: '',
         AuthorId: '',
         GenreId: '',
         description: '',
-        cover: null, // For the file upload
+        cover: null, // Для завантаження файлу
     };
 
     const ValidationSchema = Yup.object().shape({
-        title: Yup.string().required('Book title is required'),
-        AuthorId: Yup.string().required('Author name is required'),
-        GenreId: Yup.string().required('Genre is required'),
-        description: Yup.string().required('Book description is required').max(2000, 'Description can\'t exceed 2000 characters'),
-        cover: Yup.mixed().required('Cover image is required'),
+        title: Yup.string().required('Назва книги є обов\'язковою'),
+        AuthorId: Yup.string().required('Ім\'я автора є обов\'язковим'),
+        GenreId: Yup.string().required('Жанр є обов\'язковим'),
+        description: Yup.string().required('Опис книги є обов\'язковим').max(2000, 'Опис не може перевищувати 2000 символів'),
+        cover: Yup.mixed().required('Обкладинка книги є обов\'язковою'),
     });
 
     const onSubmit = async (data, { resetForm, setFieldError }) => {
@@ -36,7 +36,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
                 return;
             }
 
-            // Handling author creation or fetching
+            // Отримання або створення автора
             let authorResponse = await axios.get("http://localhost:3001/authors", {
                 headers: { accessToken }
             });
@@ -52,7 +52,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
                 authorId = newAuthorResponse.data.id;
             }
 
-            // Handling genre creation or fetching
+            // Отримання або створення жанру
             let genreResponse = await axios.get("http://localhost:3001/genres");
             let genreId;
             const existingGenre = genreResponse.data.find(
@@ -66,15 +66,15 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
                 genreId = newGenreResponse.data.id;
             }
 
-            // Prepare form data with the cover image
+            // Підготовка даних форми з обкладинкою
             const formData = new FormData();
             formData.append('title', data.title);
             formData.append('description', data.description);
             formData.append('AuthorId', authorId);
             formData.append('GenreId', genreId);
-            formData.append('cover', data.cover); // Add the cover image
+            formData.append('cover', data.cover); // Додаємо обкладинку
 
-            // Send the form data to the server
+            // Надсилання даних на сервер
             const response = await axios.post("http://localhost:3001/books", formData, {
                 headers: { 'Content-Type': 'multipart/form-data', accessToken },
             });
@@ -85,24 +85,24 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
 
             onAddBook(newBook);
 
-            setNotification('Book uploaded successfully!'); // Set success message
-            resetForm(); // Clear the form fields
+            setNotification('Книга успішно завантажена!'); // Сповіщення про успіх
+            resetForm(); // Очищення полів форми
 
         } catch (err) {
             if (err.response) {
-                // If there is a response from the server, show the error message
-                const errorMessage = err.response.data.message || 'Error uploading the book. Please try again.';
+                // Якщо є відповідь від сервера, показуємо повідомлення про помилку
+                const errorMessage = err.response.data.message || 'Помилка при завантаженні книги. Спробуйте ще раз.';
                 setNotification(errorMessage);
                 
-                // Specific field error for cover
+                // Специфічна помилка для обкладинки
                 if (errorMessage.toLowerCase().includes('cover')) {
-                    setFieldError("cover", "Error uploading the cover image. Please try again.");
+                    setFieldError("cover", "Помилка при завантаженні обкладинки. Спробуйте ще раз.");
                 }
             } else {
-                // If there is no response, use a generic message
-                setNotification('Error uploading the book. Please try again.');
+                // Якщо немає відповіді, використовуємо загальне повідомлення
+                setNotification('Помилка при завантаженні книги. Спробуйте ще раз.');
             }
-            console.error("Error uploading the book:", err);
+            console.error("Помилка при завантаженні книги:", err);
         }
     };
 
@@ -120,24 +120,24 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             >
                 {({ setFieldValue }) => (
                     <Form className="form-container">
-                        <h1>Add a book</h1>
+                        <h1>Додати книгу</h1>
                         <button onClick={onClose} className="close-modal-button">
                           &times;
                         </button>
 
                         <div className="form-group">
-                            <label htmlFor="title">Enter book title</label>
+                            <label htmlFor="title">Введіть назву книги</label>
                             <Field
                                 id="inputCreatePost"
                                 name="title"
-                                placeholder="Book title"
+                                placeholder="Назва книги"
                                 className="form-field"
                             />
                             <ErrorMessage name="title" component="div" className="error-message" />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="cover">Upload book cover</label>
+                            <label htmlFor="cover">Завантажити обкладинку книги</label>
                             <input
                                 id="cover"
                                 name="cover"
@@ -151,41 +151,41 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="author">Enter book author’s full name</label>
+                            <label htmlFor="author">Введіть повне ім'я автора книги</label>
                             <Field
                                 id="inputCreatePost"
                                 name="AuthorId"
-                                placeholder="Book author"
+                                placeholder="Автор книги"
                                 className="form-field"
                             />
                             <ErrorMessage name="AuthorId" component="div" className="error-message" />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="genre">Enter book genre</label>
+                            <label htmlFor="genre">Введіть жанр книги</label>
                             <Field
                                 id="inputCreatePost"
                                 name="GenreId"
-                                placeholder="Book genre"
+                                placeholder="Жанр книги"
                                 className="form-field"
                             />
                             <ErrorMessage name="GenreId" component="div" className="error-message" />
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="description">Enter book description</label>
+                            <label htmlFor="description">Введіть опис книги</label>
                             <Field
                                 id="inputCreatePost"
                                 name="description"
                                 as="textarea"
-                                placeholder="Book description"
+                                placeholder="Опис книги"
                                 className="form-field"
                             />
                             <ErrorMessage name="description" component="div" className="error-message" />
                         </div>
 
                         <button type="submit" className="submit-button">
-                            Submit
+                            Надіслати
                         </button>
                     </Form>
                 )}

@@ -20,22 +20,6 @@ const renderStars = (rating) => {
     return <div className="rating-stars">{stars}</div>;
 };
 
-const FilterSidebar = () => (
-    <div className="filterSidebar">
-        {/* <h2 className="filterTitle">Фильтр комментариев</h2>
-        <ul>
-            {['Все', 'К манге', 'К главам', 'К аниме', 'К сериям', 'К новости'].map((label, index) => (
-                <li className="filterItem" key={index}>
-                    <label>
-                        <input type="radio" name="filter" className="radio" />
-                        {label}
-                    </label>
-                </li>
-            ))}
-        </ul> */}
-    </div>
-);
-
 const ReviewsContainer = ({ reviews }) => {
     const [reviewList, setReviewList] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
@@ -76,7 +60,7 @@ const ReviewsContainer = ({ reviews }) => {
 
     return (
         <div className="container">
-            <FilterSidebar />
+            
             <CommentsSection
                 reviews={reviewList}
                 onDelete={handleDelete}
@@ -98,35 +82,41 @@ const CommentsSection = ({ reviews, onDelete, searchTerm, setSearchTerm, onSearc
             resetReviews={resetReviews} // Pass resetReviews to SearchBar
         />
         <div>
-            {reviews.map((comment, index) => {
-                const formattedDate = comment.createdAt
-                    ? new Date(comment.createdAt).toLocaleDateString('uk-UA', {
-                        year: 'numeric',
-                        month: '2-digit',
-                        day: '2-digit',
-                    })
-                    : 'N/A';
+            {reviews.length === 0 ? (
+                <div className="no-books-message">
+                    <p>Не знайдено жодних вігуків.</p>
+                </div>
+            ) : (
+                reviews.map((comment, index) => {
+                    const formattedDate = comment.createdAt
+                        ? new Date(comment.createdAt).toLocaleDateString('uk-UA', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                        })
+                        : 'N/A';
 
                     console.log("Book id here", comment);
-                    
 
-                return (
-                    <Comment
-                        key={index}
-                        id={comment.id}
-                        title={comment.Book?.title}
-                        stars={comment.rating}
-                        text={comment.review_text}
-                        time={formattedDate}
-                        image={comment.Book?.cover}
-                        bookId={comment.BookId} // Pass the book ID here
-                        onDelete={onDelete}
-                    />
-                );
-            })}
+                    return (
+                        <Comment
+                            key={index}
+                            id={comment.id}
+                            title={comment.Book?.title}
+                            stars={comment.rating}
+                            text={comment.review_text}
+                            time={formattedDate}
+                            image={comment.Book?.cover}
+                            bookId={comment.BookId} // Pass the book ID here
+                            onDelete={onDelete}
+                        />
+                    );
+                })
+            )}
         </div>
     </div>
 );
+
 
 const SearchBar = ({ searchTerm, setSearchTerm, onSearch, resetReviews }) => {
     const handleClear = () => {

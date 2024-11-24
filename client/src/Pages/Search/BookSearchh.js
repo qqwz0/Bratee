@@ -39,7 +39,7 @@ const BookSearchh = () => {
       })
       .catch((error) => {
         console.error("Error searching for books:", error);
-        setListOfBooks([]); // Clear books if none found
+        setListOfBooks([]); // Очистити список, якщо книги не знайдені
       });
   };
 
@@ -100,17 +100,17 @@ const BookSearchh = () => {
       <div className="search-book-container">
         <img src={SearchPicture} alt="Search" />
         <div className="search-books">
-          <h1 className="primary-heading" style={{ textAlign: 'left' }}>Find any added book here!</h1>
+          <h1 className="primary-heading" style={{ textAlign: 'left' }}>Знайдіть будь-яку додану книгу тут!</h1>
           <div className="contact-form-container" id="search-books-input-container">
             <input 
               type="text" 
-              placeholder="Enter book title here" 
+              placeholder="Введіть назву книги тут" 
               id="search-books-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className="secondary-button" id="search-books-button" onClick={searchBooks}>
-              Search <FontAwesomeIcon icon={faMagnifyingGlass}/>
+              Пошук <FontAwesomeIcon icon={faMagnifyingGlass}/>
             </button>
           </div>
         </div>
@@ -152,7 +152,7 @@ const BookSearchh = () => {
           </div>
         ) : (
           <div className="no-books-message">
-            <p>No books found.</p>
+            <p>Книг не знайдено.</p>
           </div>
         )}
     </div>

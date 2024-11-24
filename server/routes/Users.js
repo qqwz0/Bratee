@@ -10,6 +10,8 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
+const db = require('../models');
+
 
 const { sign } = require('jsonwebtoken');
 
@@ -48,6 +50,32 @@ const upload = multer({
     }
 });
 
+router.get('/admin/:id', async (req, res) => {
+    // Assuming you have a user ID in the session or JWT token
+    const userId = req.params.id;
+    console.log(userId);
+    
+
+    try {
+        const user = await Users.findOne({
+            where: { id: userId } // Find the user by ID
+        });
+
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        if (user.isAdmin) {
+            res.send('adminPage');
+        } else {
+            res.status(403).send('Access denied');  // Forbidden
+        }
+    } catch (err) {
+        console.error('Error fetching user:', err);
+        res.status(500).send('Server error');
+    }
+});
+
 router.post('/', upload.single('profilePicture'), async (req, res) => {
     const { email, password, nickname } = req.body;
     const profilePicturePath = req.file ? `pfps/${req.file.filename}` : null;
@@ -78,15 +106,12 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Find user by email
         const user = await Users.findOne({ where: { email: email } });
 
-        // Check if user was found
         if (!user) {
             return res.status(404).json({ error: "User doesn't exist." });
         }
 
-        // Compare the password
         const match = await bcrypt.compare(password, user.password);
         
         if (!match) {
@@ -194,7 +219,11 @@ router.put('/:id', upload.single('profilePicture'), async (req, res) => {
     try {
         // Build the fields to update, only including profilePicture if a file was uploaded
         const updatedFields = { nickname };
-        if (profilePicturePath) {
+
+        // If no file was uploaded, set profilePicture to null (for deletion)
+        if (profilePicturePath === null && req.body.deleteProfilePicture === 'true') {
+            updatedFields.profilePicture = null;  // Delete profile picture by setting to null
+        } else if (profilePicturePath) {
             updatedFields.profilePicture = profilePicturePath;
         }
 
@@ -214,6 +243,7 @@ router.put('/:id', upload.single('profilePicture'), async (req, res) => {
         return res.status(500).json({ error: "An error occurred while updating the user." });
     }
 });
+
 
 router.post('/forgot-password', async (req, res) => {
     const { email } = req.body;

@@ -1,6 +1,5 @@
 import React from "react";
 import BooksSlider from "./BooksSlider";
-import Contact from "./Contact";
 import Homee from "./Home";
 import Testimonial from "./Testimonial";
 import "./Home.css";
@@ -13,8 +12,6 @@ const Home = () => {
     <Homee />
     <BooksSlider />
     <Testimonial />
-    <Contact />
-
     </div>
   );
 };

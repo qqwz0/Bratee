@@ -14,15 +14,14 @@ const Home = () => {
         </div>
         <div className="home-text-section">
           <h1 className="primary-heading">
-            Discover, Rate, and Share Your Favorite Books
+            Відкривайте нове та діліться враженнями
           </h1>
           <p className="primary-text">
-          Find books tailored to your interests, leave a 
-          review after each read, and get personalized 
-          suggestions from fellow book lovers.
+            Знайдіть книги, які відповідають вашим інтересам, залишайте відгуки після кожного читання
+            та отримуйте персоналізовані рекомендації від інших читачів!
           </p>
           <button className="secondary-button">
-           Try it now! <FiArrowRight />{" "}
+            Спробуйте зараз! <FiArrowRight />{" "}
           </button>
         </div>
         <div className="home-image-section">

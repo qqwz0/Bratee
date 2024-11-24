@@ -1,63 +1,117 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './AdminPannel.css';
 import Navbar from '../../Components/Navbar/Navbar';
+import { getUserId } from '../../Components/Navbar/Navbar';
 
 const AdminPanel = () => {
   const [books, setBooks] = useState([]);
-  const [updatedBooks, setUpdatedBooks] = useState([]); // Initialize updatedBooks state
+  const [updatedBooks, setUpdatedBooks] = useState([]); // Ініціалізація стану для оновлених книжок
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [expandedBookIds, setExpandedBookIds] = useState(new Set()); // To manage expanded books
+  const [expandedBookIds, setExpandedBookIds] = useState(new Set()); // Для управління розкритими книжками
+  const [, setIsAdmin] = useState(false); // Стан для відстеження, чи є користувач адміністратором
+  const navigate = useNavigate();
+
+  const userId = getUserId();
 
   useEffect(() => {
+    // Перевірка, чи є користувач адміністратором
+    axios.get(`http://localhost:3001/users/admin/${userId}`)
+      .then(response => {
+        if (response.status === 403) {
+          alert('Доступ заборонено');
+          navigate.push('/'); // Перехід на домашню сторінку або іншу сторінку, якщо користувач не адміністратор
+        } else {
+          setIsAdmin(true); // Користувач є адміністратором
+          fetchBooks();
+          fetchUpdatedBooks();
+        }
+      })
+      .catch(error => {
+        console.error('Сторінка не знайдена', error);
+        setError('Сторінка не знайдена');
+        setLoading(false);
+      });
+  }, [userId, navigate]); // Додаємо userId і navigate в залежності
+
+  const fetchBooks = () => {
     axios
       .get('http://localhost:3001/books', {
         params: { isAdmin: 'true' }
       })
       .then(response => {
-        console.log(response.data);
         setBooks(response.data);
         setLoading(false);
       })
       .catch(error => {
-        console.error('Error fetching books:', error);
-        setError('Error fetching books');
+        console.error('Помилка при завантаженні книжок:', error);
+        setError('Помилка при завантаженні книжок');
         setLoading(false);
       });
+  };
 
-    // Fetch updated books here
+  const fetchUpdatedBooks = () => {
     axios
-      .get('http://localhost:3001/updated-books') // Replace with your actual API endpoint
+      .get('http://localhost:3001/books/updated-books')
       .then(response => {
         setUpdatedBooks(response.data);
       })
       .catch(error => {
-        console.error('Error fetching updated books:', error);
+        console.error('Помилка при завантаженні оновлених книжок:', error);
       });
-  }, []);
+  };
 
   const handleApprove = (bookId) => {
     axios.post(`http://localhost:3001/books/approve/${bookId}`)
       .then(response => {
-        alert('Book approved');
-        setBooks(books.filter(book => book.id !== bookId));  // Update the UI
+        alert('Книжка схвалена');
+        setBooks(books.filter(book => book.id !== bookId));  // Оновлення UI
       })
       .catch(error => {
-        console.error('Error approving book:', error);
-        alert('Error approving the book');
+        console.error('Помилка при схваленні книжки:', error);
+        alert('Помилка при схваленні книжки');
+      });
+  };
+
+  const handleApproveUpdate = (bookId) => {
+    console.log("Схвалення оновлення для книжки з ID:", bookId);
+    axios
+      .put(`http://localhost:3001/books/approve-update/${bookId}`)
+      .then(response => {
+        alert('Оновлення схвалене');
+        setUpdatedBooks(updatedBooks.filter(book => book.updatedBookData.id !== bookId));
+      })
+      .catch(error => {
+        console.error('Помилка при схваленні оновлення:', error);
+        alert('Помилка при схваленні оновлення');
       });
   };
 
   const handleReject = (bookId) => {
     axios.post(`http://localhost:3001/books/reject/${bookId}`)
       .then(response => {
-        alert('Book rejected');
-        setBooks(books.filter(book => book.id !== bookId));  // Update the UI
+        alert('Книжка відхилена');
+        setBooks(books.filter(book => book.id !== bookId));  // Оновлення UI
       })
       .catch(error => {
-        console.error('Error rejecting book:', error);
-        alert('Error rejecting the book');
+        console.error('Помилка при відхиленні книжки:', error);
+        alert('Помилка при відхиленні книжки');
+      });
+  };
+
+  const handleRejectUpdate = (bookId) => {
+    console.log("Відхилення оновлення для книжки з ID:", bookId);
+    axios
+      .delete(`http://localhost:3001/books/reject-update/${bookId}`)
+      .then(response => {
+        alert('Оновлення відхилене');
+        setUpdatedBooks(updatedBooks.filter(book => book.updatedBookData.id !== bookId));
+      })
+      .catch(error => {
+        console.error('Помилка при відхиленні оновлення:', error);
+        alert('Помилка при відхиленні оновлення');
       });
   };
 
@@ -65,16 +119,16 @@ const AdminPanel = () => {
     setExpandedBookIds(prevState => {
       const newSet = new Set(prevState);
       if (newSet.has(bookId)) {
-        newSet.delete(bookId); // Collapse
+        newSet.delete(bookId); // Згорнути
       } else {
-        newSet.add(bookId); // Expand
+        newSet.add(bookId); // Розгорнути
       }
       return newSet;
     });
   };
 
   if (loading) {
-    return <p className="loading-text">Loading books...</p>;
+    return <p className="loading-text">Завантаження книжок...</p>;
   }
 
   if (error) {
@@ -84,21 +138,21 @@ const AdminPanel = () => {
   return (
     <div className="admin-panel">
       <Navbar />
-      <h1 className="admin-panel-title">Admin Panel</h1>
+      <h1 className="admin-panel-title">Адміністративна панель</h1>
 
-      {/* Table for Added Books */}
+      {/* Таблиця для доданих книжок */}
       <h2 style={{ textAlign: 'center', margin: '20px 0px' }}>Додані книжки</h2>
       <table className="books-table">
         <thead>
           <tr className="books-tr">
-            <th>Title</th>
-            <th>Cover</th>
-            <th>Author</th>
-            <th>Genre</th>
-            <th>Description</th>
-            <th>User email</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Назва</th>
+            <th>Обкладинка</th>
+            <th>Автор</th>
+            <th>Жанр</th>
+            <th>Опис</th>
+            <th>Email користувача</th>
+            <th>Статус</th>
+            <th>Дії</th>
           </tr>
         </thead>
         <tbody>
@@ -122,59 +176,65 @@ const AdminPanel = () => {
                 </div>
                 {book.description.length > 50 && (
                   <span className="show-more" onClick={() => toggleDescription(book.id)}>
-                    {expandedBookIds.has(book.id) ? 'Show Less' : 'Show More'}
+                    {expandedBookIds.has(book.id) ? 'Показати менше' : 'Показати більше'}
                   </span>
                 )}
               </td>
               <td>{book.User?.email}</td>
               <td>{book.status}</td>
               <td className="admin-button-container">
-                <button className="approve-btn" onClick={() => handleApprove(book.id)}>Approve</button>
-                <button className="reject-btn" onClick={() => handleReject(book.id)}>Reject</button>
+                <button className="approve-btn" onClick={() => handleApprove(book.id)}>Схвалити</button>
+                <button className="reject-btn" onClick={() => handleReject(book.id)}>Відхилити</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Table for Updated Books */}
+      {/* Таблиця для оновлених книжок */}
       <h2 style={{ textAlign: 'center', margin: '20px 0px' }}>Оновлені книжки</h2>
       <table className="books-table">
         <thead>
           <tr className="books-tr">
-            <th>Title</th>
-            <th>Updated Title</th>
-            <th>Previous Cover</th>
-            <th>Updated Cover</th>
-            <th>Previous Description</th>
-            <th>Updated Description</th>
-            <th>User email</th>
-            <th>Actions</th>
+            <th>Оригінальна назва</th>
+            <th>Оновлена назва</th>
+            <th>Оригінальна обкладинка</th>
+            <th>Оновлена обкладинка</th>
+            <th>Оригінальний опис</th>
+            <th>Оновлений опис</th>
+            <th>Email користувача</th>
+            <th>Дії</th>
           </tr>
         </thead>
         <tbody>
-          {updatedBooks.map(book => (
-            <tr key={book.id}>
-              <td>{book.newTitle || book.title}</td>
+          {updatedBooks.map((book, index) => (
+            <tr key={index}>
+              <td>{book.originalBookData?.title}</td>
+              <td>{book.updatedBookData?.title}</td>
               <td>
                 <img
                   className="book-cover"
-                  src={book.previousCover ? `http://localhost:3001/${book.previousCover}` : null}
-                  alt="Previous Cover"
+                  src={book.originalBookData?.cover ? `http://localhost:3001/${book.originalBookData.cover}` : null}
+                  alt="Оригінальна обкладинка"
                 />
               </td>
               <td>
                 <img
                   className="book-cover"
-                  src={book.updatedCover ? `http://localhost:3001/${book.updatedCover}` : null}
-                  alt="Updated Cover"
+                  src={book.updatedBookData?.cover ? `http://localhost:3001/${book.updatedBookData.cover}` : null}
+                  alt="Оновлена обкладинка"
                 />
               </td>
-              <td>{book.previousDescription}</td>
-              <td>{book.updatedDescription}</td>
-              <td className="admin-button-container">
-                <button className="approve-btn" onClick={() => handleApprove(book.id)}>Approve</button>
-                <button className="reject-btn" onClick={() => handleReject(book.id)}>Reject</button>
+              <td>{book.originalBookData?.description}</td>
+              <td>{book.updatedBookData?.description}</td>
+              <td>{book.User?.email}</td>
+              <td>
+                <button className="approve-btn" onClick={() => handleApproveUpdate(book.updatedBookData?.id)}>
+                  Схвалити
+                </button>
+                <button className="reject-btn" onClick={() => handleRejectUpdate(book.updatedBookData?.id)}>
+                  Відхилити
+                </button>
               </td>
             </tr>
           ))}

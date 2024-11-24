@@ -51,24 +51,24 @@ const ReviewModal = ({ isOpen, onClose, onSubmit }) => {
         >
           {({ isSubmitting }) => (
             <Form className="form-container">
-              <h1>Add a Review</h1>
+              <h1>Додати відгук</h1>
               <button onClick={onClose} className="close-modal-button">&times;</button>
 
               {/* StarRating Component */}
               <div className="form-group">
-                <label>Rating (1-5):</label>
+                <label>Рейтинг (1-5):</label>
                 <StarRating />
                 <ErrorMessage name="rating" component="div" className="error-message" />
               </div>
 
               <div className="form-group">
-                <label htmlFor="review_text">Review:</label>
+                <label htmlFor="review_text">Текст відгуку:</label>
                 <Field as="textarea" name="review_text" id="review_text" />
                 <ErrorMessage name="review_text" component="div" className="error-message" />
               </div>
 
               <button type="submit" className="submit-button" disabled={isSubmitting}>
-                Submit
+                Надіслати
               </button>
             </Form>
           )}

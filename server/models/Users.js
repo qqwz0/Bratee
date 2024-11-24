@@ -18,12 +18,17 @@ module.exports = (sequelize, DataTypes) => {
           allowNull: true, // Can be null initially
           defaultValue: 'pfps/311e7ad01e414f0821610c9c4f7a48ae.jpg'
       },
+      isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false, // Default to false for non-admin users
+    },
   });
 
   Users.associate = (models) => {
     Users.hasMany(models.Books, { foreignKey: { allowNull: false } });
     Users.associate = (models) => {
-      Users.hasMany(models.LikedBooks, { foreignKey: 'userId', as: 'likedBooks' });
+      Users.hasMany(models.LikedBooks, { foreignKey: 'userId', as: 'likedBooks', onDelete: 'CASCADE' });
     };
   };
 

@@ -14,8 +14,8 @@ function BookPage() {
   const { id } = useParams();
   const [bookObject, setBookObject] = useState({});
   const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setLoading] = useState(true);
+  const [, setError] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [category, setCategory] = useState(null); // State for selected category
 
@@ -33,22 +33,20 @@ function BookPage() {
         
         if (userId) {
           try {
-            const categoriesResponse = await axios.get(`http://localhost:3001/likedbooks/${userId}/${id}`);
-            console.log("Categories Response Status:", categoriesResponse.status);  // Log status code
-            console.log("Categories Response Data:", categoriesResponse.data);  // Log the data of categories response
+            const categoriesResponse = await axios.get(`http://localhost:3001/likedbooks/${userId}/${id}`)
             
             // Check for 404 explicitly or handle absence of likedBook
             if (categoriesResponse.status === 404) {
-              console.log("Book not found in user's liked list.");
+              console.log("Книга не знайдена у збірках користувача");
               setCategory(null);  // Set category to null if not found
             } else if (categoriesResponse.data && categoriesResponse.data.likedBook && categoriesResponse.data.likedBook.category) {
               setCategory(categoriesResponse.data.likedBook.category);  // Access category from likedBook object
             } else {
-              console.log("No category found for this book.");
+              console.log("Для цієї книги не знайдено категорій.");
               setCategory(null);  // In case no category is found
             }
           } catch (error) {
-            console.error("Error fetching liked books:", error);  // Log error in case of other issues
+            console.error("Помилка відображення книг", error);  // Log error in case of other issues
             setCategory(null);  // Optionally, set category to null in case of error
           }
         }
@@ -66,7 +64,7 @@ function BookPage() {
     const accessToken = localStorage.getItem('accessToken');
   
     if (!accessToken) {
-      alert("You must be logged in to add a review.");
+      alert("Ти мусиш бути зареєстрованим, щоби додавати відгуки.");
       return;
     }
   
@@ -79,8 +77,6 @@ function BookPage() {
           headers: { accessToken },
         }
       );
-
-      console.log('New review data:', response.data);
   
       // Update the reviews state with the complete review object from the server
       setReviews((prev) => [...prev, response.data]);
@@ -90,8 +86,7 @@ function BookPage() {
       await axios.put(`http://localhost:3001/books/rating/${id}`, {rating: updatedAverageRating});
 
     } catch (err) {
-      console.error("Error adding review:", err);
-      alert("Error adding review. Please try again.");
+      alert("Помилка в додаванні відгуку. Будь ласка, спробуйте ще раз.");
     }
     
   };
@@ -110,13 +105,13 @@ function BookPage() {
   
     // Check if the user is logged in
     if (!userId) {
-      alert('You must be logged in to modify your book categories.');
+      alert('Ти мусиш бути зареєстрованим, щоби додавати книги у збірки.');
       return;
     }
   
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
-      alert('You must be logged in to modify your book categories.');
+      alert('Ти мусиш бути зареєстрованим, щоби додавати книги у збірки.');
       return;
     }
   
@@ -135,11 +130,11 @@ function BookPage() {
         );
   
         if (response.status === 200) {
-          alert('Category removed successfully!');
+          alert('Книга прибрана зі збірки!');
         }
       } catch (error) {
         console.error(error);
-        alert('Failed to remove the category. Please try again.');
+        alert('Не вийшло прибрати книгу зі збірки :(. Спробуй ще раз.');
       }
   
       return; // Exit the function early since the category was removed
@@ -156,19 +151,15 @@ function BookPage() {
       );
   
       if (response.status === 201) {
-        alert('Category added successfully!');
+        alert('Книга успішно додана в збірку!');
       }
     } catch (error) {
       console.error(error);
-      alert('Failed to add the category. Please try again.');
+      alert('Не вийшло додати книгу до збірки :(. Спробуй ще раз.');
     }
   };
   
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error fetching book details: {error.message}</div>;
-
-  const { title, genre, description, Genre, Author, cover } = bookObject;
+  const { title, description, Genre, Author, cover } = bookObject;
   const averageRating = calculateAverageRating(reviews); // Get average rating
 
   const getCategoryButtonClass = (category) => {
@@ -259,12 +250,12 @@ function BookPage() {
             </li>
 
             <li className="book-stat" id='genre'>
-              <h4>Genre</h4>
+              <h4>Жанр</h4>
               <p>{Genre?.name}</p>
             </li>
 
             <li className="book-stat" id='rating'>
-              <h4>Rating</h4>
+              <h4>Рейтинг</h4>
               {/* Render stars based on average rating */}
               <div className="review-rating">
                 {Array.from({ length: Math.round(averageRating) }, (_, i) => (
@@ -277,7 +268,7 @@ function BookPage() {
             </li>
 
             <li className="book-stat" id='description'>
-              <h4>Description</h4>
+              <h4>Опис</h4>
               <p>{description}</p>
             </li>
           </ul>
@@ -285,7 +276,7 @@ function BookPage() {
 
         <div className="reviewSection">
           <button className="secondary-button" id='bookPageReviewButton' onClick={() => setModalOpen(true)}>
-            Add a review
+            Додати відгук
           </button>
 
           {/* Render reviews here */}

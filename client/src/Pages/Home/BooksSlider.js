@@ -1,12 +1,10 @@
 import React from "react";
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-
-import axios from "axios";
-import { useState, useEffect } from "react";
-
+import { useState } from "react";
 
 import meditationsCover from '../../Assets/meditations_cover.jpg';
 import mythCover from '../../Assets/the_myth_cover.jpg';
@@ -15,34 +13,18 @@ import historyCover from '../../Assets/secret_history_image.jpg';
 import atomicCover from '../../Assets/atomic_habits_image.jpg';
 
 const About = () => {
-  // Initial hardcoded books
+  // Початкові захардкожені книги
   const initialBooks = [
-    { title: 'Meditations', author: 'Marcus Aurelius', image: meditationsCover },
-    { title: 'The Myth of Sisyphus', author: 'Albert Camus', image: mythCover },
-    { title: 'Percy Jackson', author: 'Rick Riordan', image: percyCover },
-    { title: 'The Secret History', author: 'Donna Tartt', image: historyCover },
-    { title: 'Atomic Habits', author: 'James Clear', image: atomicCover },
+    { title: 'Медитації', author: 'Маркус Аврелій', image: meditationsCover },
+    { title: 'Міф про Сізіфа', author: 'Альбер Камю', image: mythCover },
+    { title: 'Персі Джексон', author: 'Рік Ріордан', image: percyCover },
+    { title: 'Тайна історія', author: 'Донна Тартт', image: historyCover },
+    { title: 'Атомні звички', author: 'Джеймс Клір', image: atomicCover },
   ];
 
-  const [books, setBooks] = useState(initialBooks); // Store books here
+  const [books] = useState(initialBooks); // Зберігаємо книги тут
 
-  // Fetch data from API
-  useEffect(() => {
-    axios.get('') // Replace with your actual API URL
-      .then(response => {
-        const fetchedBooks = response.data.map(book => ({
-          title: book.title,
-          author: book.author,
-          image: book.cover_image || meditationsCover // Use default image if none provided
-        }));
-        setBooks(fetchedBooks); // Update the state with fetched books
-      })
-      .catch(error => {
-        console.error("Error fetching books:", error);
-      });
-  }, []); // Empty dependency array means this effect runs once when the component mounts
-
-  // Responsive settings for the carousel
+  // Адаптивні налаштування для каруселі
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 800 },
@@ -52,10 +34,10 @@ const About = () => {
 
   return (
     <div className="search-books-container">
-      <h1 className="primary-heading" id="about-heading">Search for your favourite books</h1>
+      <h1 className="primary-heading" id="about-heading">Шукайте свої улюблені книги</h1>
       <p className="primary-text" id='about-text'>
-        On our website, you'll find a wide variety of books to explore.<br />
-        From bestsellers to hidden gems, browse through different genres and discover your next great read.
+        Тут ви знайдете широкий вибір книг для вивчення.<br />
+        Від бестселерів до прихованих перлин, переглядайте різні жанри та відкривайте для себе наступну чудову книгу.
       </p>
 
       <div className="book-carousel-container">
@@ -74,7 +56,7 @@ const About = () => {
 
       <div className="search-button-container">
         <button className="secondary-button">
-          Search! <FontAwesomeIcon icon={faMagnifyingGlass} />
+          Шукати! <FontAwesomeIcon icon={faMagnifyingGlass} />
         </button>
       </div>
     </div>
