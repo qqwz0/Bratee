@@ -18,7 +18,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     // Перевірка, чи є користувач адміністратором
-    axios.get(`http://localhost:3001/users/admin/${userId}`)
+    axios.get(`${process.env.REACT_APP_API_URL}/users/admin/${userId}`)
       .then(response => {
         if (response.status === 403) {
           alert('Доступ заборонено');
@@ -38,7 +38,7 @@ const AdminPanel = () => {
 
   const fetchBooks = () => {
     axios
-      .get('http://localhost:3001/books', {
+      .get(`${process.env.REACT_APP_API_URL}/books`, {
         params: { isAdmin: 'true' }
       })
       .then(response => {
@@ -54,7 +54,7 @@ const AdminPanel = () => {
 
   const fetchUpdatedBooks = () => {
     axios
-      .get('http://localhost:3001/books/updated-books')
+      .get(`${process.env.REACT_APP_API_URL}/books/updated-books`)
       .then(response => {
         setUpdatedBooks(response.data);
       })
@@ -64,7 +64,7 @@ const AdminPanel = () => {
   };
 
   const handleApprove = (bookId) => {
-    axios.post(`http://localhost:3001/books/approve/${bookId}`)
+    axios.post(`${process.env.REACT_APP_API_URL}/books/approve/${bookId}`)
       .then(response => {
         alert('Книжка схвалена');
         setBooks(books.filter(book => book.id !== bookId));  // Оновлення UI
@@ -78,7 +78,7 @@ const AdminPanel = () => {
   const handleApproveUpdate = (bookId) => {
     console.log("Схвалення оновлення для книжки з ID:", bookId);
     axios
-      .put(`http://localhost:3001/books/approve-update/${bookId}`)
+      .put(`${process.env.REACT_APP_API_URL}/books/approve-update/${bookId}`)
       .then(response => {
         alert('Оновлення схвалене');
         setUpdatedBooks(updatedBooks.filter(book => book.updatedBookData.id !== bookId));
@@ -90,7 +90,7 @@ const AdminPanel = () => {
   };
 
   const handleReject = (bookId) => {
-    axios.post(`http://localhost:3001/books/reject/${bookId}`)
+    axios.post(`${process.env.REACT_APP_API_URL}/books/reject/${bookId}`)
       .then(response => {
         alert('Книжка відхилена');
         setBooks(books.filter(book => book.id !== bookId));  // Оновлення UI
@@ -104,7 +104,7 @@ const AdminPanel = () => {
   const handleRejectUpdate = (bookId) => {
     console.log("Відхилення оновлення для книжки з ID:", bookId);
     axios
-      .delete(`http://localhost:3001/books/reject-update/${bookId}`)
+      .delete(`${process.env.REACT_APP_API_URL}/books/reject-update/${bookId}`)
       .then(response => {
         alert('Оновлення відхилене');
         setUpdatedBooks(updatedBooks.filter(book => book.updatedBookData.id !== bookId));
@@ -162,7 +162,7 @@ const AdminPanel = () => {
               <td>
                 <img
                   className="book-cover"
-                  src={book.cover ? `http://localhost:3001/${book.cover}` : null}
+                  src={book.cover ? `${process.env.REACT_APP_API_URL}/${book.cover}` : null}
                   alt={book.title}
                 />
               </td>
@@ -214,14 +214,14 @@ const AdminPanel = () => {
               <td>
                 <img
                   className="book-cover"
-                  src={book.originalBookData?.cover ? `http://localhost:3001/${book.originalBookData.cover}` : null}
+                  src={book.originalBookData?.cover ? `${process.env.REACT_APP_API_URL}/${book.originalBookData.cover}` : null}
                   alt="Оригінальна обкладинка"
                 />
               </td>
               <td>
                 <img
                   className="book-cover"
-                  src={book.updatedBookData?.cover ? `http://localhost:3001/${book.updatedBookData.cover}` : null}
+                  src={book.updatedBookData?.cover ? `${process.env.REACT_APP_API_URL}/${book.updatedBookData.cover}` : null}
                   alt="Оновлена обкладинка"
                 />
               </td>

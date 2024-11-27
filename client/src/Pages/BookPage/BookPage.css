@@ -51,6 +51,24 @@
   color: rgb(0, 0, 0);
 }
 
+.book-stat#description p{
+  /* Add your styles here */
+  display: inline;
+}
+
+.book-stat#description a{
+  margin-left: 5px;
+  display: inline;
+  font-size: 25px;
+  color: #9747FF;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.book-stat#description a:hover{
+  text-decoration: underline;
+}
+
 #name h1{
   font-size: 45px;
 }

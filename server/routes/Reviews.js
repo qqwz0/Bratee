@@ -88,8 +88,21 @@ router.delete('/:id', validateToken, async (req, res) => {
             return res.status(403).json({ error: 'You are not authorized to delete this review' });
         }
 
+        // Get the associated book ID
+        const bookId = review.BookId;
+
         // Delete the review
         await review.destroy();
+
+        // Recalculate the average rating of the book
+        const reviews = await Reviews.findAll({ where: { BookId: bookId } });
+        const averageRating = reviews.length > 0 ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length : 0;
+
+        // Update the book's rating in the database
+        await Books.update(
+            { rating: averageRating.toFixed(1) }, // Assuming the book has a rating field
+            { where: { id: bookId } }
+        );
 
         res.json({ message: 'Review deleted successfully' });
     } catch (error) {

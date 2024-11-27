@@ -16,7 +16,7 @@ function ProfileReviewsPage() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const userResponse = await axios.get(`http://localhost:3001/users/${id}`);
+                const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/users/${id}`);
                 setUser(userResponse.data);
             } catch (err) {
                 console.error("Error fetching user data:", err);
@@ -25,7 +25,7 @@ function ProfileReviewsPage() {
 
         const fetchReviews = async () => {
             try {
-                const reviewsResponse = await axios.get(`http://localhost:3001/reviews/byUserId/${id}`);
+                const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/reviews/byUserId/${id}`);
                 setReviews(reviewsResponse.data); // Set the fetched reviews
             } catch (err) {
                 console.error("Error fetching reviews:", err);

@@ -109,6 +109,8 @@
 
 .profile-pic-container img{
   height: 5rem !important;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .remove-pic-button {

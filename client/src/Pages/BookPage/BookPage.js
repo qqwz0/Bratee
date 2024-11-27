@@ -18,14 +18,16 @@ function BookPage() {
   const [, setError] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false); // State for modal visibility
   const [category, setCategory] = useState(null); // State for selected category
+  const [isDescriptionExpanded, setDescriptionExpanded] = useState(false); // State to track if the description is expanded
+  const [expandedReviews, setExpandedReviews] = useState({});
 
   useEffect(() => {
     const fetchBookAndReviews = async () => {
       try {
-        const bookResponse = await axios.get(`http://localhost:3001/books/byId/${id}`);
+        const bookResponse = await axios.get(`${process.env.REACT_APP_API_URL}/books/byId/${id}`);
         setBookObject(bookResponse.data);
         
-        const reviewsResponse = await axios.get(`http://localhost:3001/reviews/${id}`);
+        const reviewsResponse = await axios.get(`${process.env.REACT_APP_API_URL}/reviews/${id}`);
         setReviews(reviewsResponse.data);
   
         const userId = getUserId();
@@ -33,7 +35,7 @@ function BookPage() {
         
         if (userId) {
           try {
-            const categoriesResponse = await axios.get(`http://localhost:3001/likedbooks/${userId}/${id}`)
+            const categoriesResponse = await axios.get(`${process.env.REACT_APP_API_URL}/likedbooks/${userId}/${id}`)
             
             // Check for 404 explicitly or handle absence of likedBook
             if (categoriesResponse.status === 404) {
@@ -62,41 +64,43 @@ function BookPage() {
 
   const handleAddReview = async (newReview) => {
     const accessToken = localStorage.getItem('accessToken');
-  
+    
     if (!accessToken) {
       alert("Ти мусиш бути зареєстрованим, щоби додавати відгуки.");
       return;
     }
   
     try {
-      // Post the review to the server and receive the full response with nickname
+      // Постимо відгук на сервер
       const response = await axios.post(
-        'http://localhost:3001/reviews/', 
+        `${process.env.REACT_APP_API_URL}/reviews/`, 
         { ...newReview, BookId: id }, 
-        {
-          headers: { accessToken },
-        }
+        { headers: { accessToken } }
       );
   
-      // Update the reviews state with the complete review object from the server
-      setReviews((prev) => [...prev, response.data]);
-
-      const updatedAverageRating = calculateAverageRating([...reviews, response.data]);
-      
-      await axios.put(`http://localhost:3001/books/rating/${id}`, {rating: updatedAverageRating});
-
+      // Оновлюємо список відгуків, додаючи новий
+      setReviews((prev) => {
+        const updatedReviews = [...prev, response.data];
+        const updatedAverageRating = calculateAverageRating(updatedReviews); // Перераховуємо середній рейтинг після додавання нового відгуку
+        
+        // Оновлюємо рейтинг на сервері
+        axios.put(`${process.env.REACT_APP_API_URL}/books/rating/${id}`, { rating: updatedAverageRating });
+  
+        return updatedReviews;
+      });
+  
     } catch (err) {
       alert("Помилка в додаванні відгуку. Будь ласка, спробуйте ще раз.");
     }
-    
   };
   
   // Calculate the average rating
+  // Функція для розрахунку середнього рейтингу
   const calculateAverageRating = (reviews) => {
-    if (reviews.length === 0) return 0; // No reviews, return 0
+    if (reviews.length === 0) return 0; // Якщо відгуків немає, повертаємо 0
 
-    const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0);
-    return (totalRating / reviews.length).toFixed(1); // Return average rating, fixed to 1 decimal place
+    const totalRating = reviews.reduce((acc, review) => acc + review.rating, 0); // Підсумовуємо всі оцінки
+    return (totalRating / reviews.length).toFixed(1); // Повертаємо середнє значення з 1 десятковим знаком
   };
 
   const handleCategorySelect = async (selectedCategory) => {
@@ -122,7 +126,7 @@ function BookPage() {
       try {
         // Make a DELETE request to remove the category from the user's liked books
         const response = await axios.delete(
-          `http://localhost:3001/likedbooks`,
+          `${process.env.REACT_APP_API_URL}/likedbooks`,
           {
             headers: { accessToken },
             data: { userId: userId, bookId: id, category: selectedCategory },
@@ -145,7 +149,7 @@ function BookPage() {
   
     try {
       const response = await axios.post(
-        'http://localhost:3001/likedbooks',
+        `${process.env.REACT_APP_API_URL}/likedbooks`,
         { userId: userId, bookId: id, category: selectedCategory },
         { headers: { accessToken } }
       );
@@ -196,6 +200,10 @@ function BookPage() {
     }
   };
 
+  const toggleDescription = () => {
+    setDescriptionExpanded(prev => !prev);
+  };
+
   return (
     <div className="book-page-container">
       <Navbar />
@@ -206,7 +214,7 @@ function BookPage() {
 
         <div className="book-description" background-color='red'>
           <div className="book-pic">
-          <img src={`http://localhost:3001/${cover}`} alt="Book Cover" className="bookCover" />
+          <img src={`${process.env.REACT_APP_API_URL}/${cover}`} alt="Book Cover" className="bookCover" />
             
             {/* Tippy Tooltip with a category selection */}
             <Tippy
@@ -268,8 +276,12 @@ function BookPage() {
             </li>
 
             <li className="book-stat" id='description'>
-              <h4>Опис</h4>
-              <p>{description}</p>
+              <p>
+                {isDescriptionExpanded ? description : `${(description || "").slice(0, 200)}...`}
+              </p>
+              <a onClick={toggleDescription}>
+                {isDescriptionExpanded ? "Показати менше <-" : "Показати більше ->"}
+              </a>
             </li>
           </ul>
         </div>
@@ -283,7 +295,7 @@ function BookPage() {
           {reviews.map((review, index) => (
             <div className="review-card" key={index}>
               <img
-               src={review.User?.profilePicture ? `http://localhost:3001/${review.User.profilePicture}` : `http://localhost:3001/pfps/311e7ad01e414f0821610c9c4f7a48ae.jpg`}
+               src={review.User?.profilePicture ? `${process.env.REACT_APP_API_URL}/${review.User.profilePicture}` : `${process.env.REACT_APP_API_URL}/pfps/311e7ad01e414f0821610c9c4f7a48ae.jpg`}
                alt="Reviewer"
                className="profile-pic"
               />

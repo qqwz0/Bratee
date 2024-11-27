@@ -18,7 +18,9 @@ const BookSearchh = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:3001/books')
+    console.log(process.env.REACT_APP_API_URL);
+    
+    axios.get(`${process.env.REACT_APP_API_URL}/books`)
       .then((response) => {
         const sortedBooks = sortBooks(response.data, 'rating', 'asc');
         setListOfBooks(sortedBooks);
@@ -32,7 +34,7 @@ const BookSearchh = () => {
   }, [sortOption, sortDirection]);
 
   const searchBooks = () => {
-    axios.get(`http://localhost:3001/books/search?title=${searchTerm}`)
+    axios.get(`${process.env.REACT_APP_API_URL}/books/search?title=${searchTerm}`)
       .then((response) => {
         const sortedBooks = sortBooks(response.data, sortOption, sortDirection);
         setListOfBooks(sortedBooks);
@@ -133,22 +135,34 @@ const BookSearchh = () => {
         </div>
 
         {listOfBooks.length > 0 ? (
-          <div className="book-grid">
-            {listOfBooks.map((book, index) => (
-              <div className="book-card" key={index} onClick={() => navigate(`/book/${book.id}`)}>
-                {book.cover && (
-                  <img 
-                    src={`http://localhost:3001/${book.cover}`}
-                    alt={book.title}
-                    className="book-cover"
-                  />
-                )}
-                <div className="book-card-text">
-                  <p>Книга</p>
-                  <h3>{book.title}</h3>
-                </div>
-              </div>
-            ))}
+              <div className="book-grid">
+                {listOfBooks.map((book, index) => (
+      <div
+        className="book-card"
+        key={index}
+        onClick={() => navigate(`/book/${book.id}`)}
+      >
+        {book.cover && (
+          <img
+            src={`${process.env.REACT_APP_API_URL}/${book.cover}`}
+            alt={book.title}
+            className="book-cover"
+          />
+        )}
+        <div className="book-card-text">
+          <h3>{book.title}</h3>
+        </div>
+        <div className="book-card-hover">
+          <p className="hover-title">{book.title}</p>
+          {book.Author?.full_name && (
+            <p className="hover-author"><strong>Автор:</strong> {book.Author.full_name}</p>
+          )}
+          {book.Genre?.name && (
+            <p className="hover-genre"><strong>Жанр:</strong> {book.Genre?.name}</p>
+          )}
+      </div>
+      </div>
+    ))}
           </div>
         ) : (
           <div className="no-books-message">

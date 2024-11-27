@@ -25,7 +25,7 @@ function LogInPage() {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/users/login', { email, password });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/login`, { email, password });
       if (response.data.error) {
         alert(response.data.error);
       } else {
@@ -60,7 +60,7 @@ function LogInPage() {
 
     auth.signIn().then((googleUser) => {
       const id_token = googleUser.getAuthResponse().id_token;
-      axios.post('http://localhost:3001/users/google-login', { id_token })
+      axios.post(`${process.env.REACT_APP_API_URL}/users/google-login`, { id_token })
         .then((response) => {
           const { accessToken, id } = response.data;
           localStorage.setItem('accessToken', accessToken);

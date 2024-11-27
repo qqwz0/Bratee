@@ -6,8 +6,9 @@ import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { gapi } from 'gapi-script';
-
+import api from '../../axiosInstance'
 import google from '../../Assets/google.svg';
+
 
 function SignUpPage() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function SignUpPage() {
   });
 
   const onSubmit = (data) => {
-    axios.post('http://localhost:3001/users', data)
+    axios.post(`${process.env.REACT_APP_API_URL}/users`, data)
       .then((response) => {
         console.log('Успішна реєстрація:', response.data);
         if (response.data.accessToken && response.data.id) {
@@ -60,7 +61,7 @@ function SignUpPage() {
       const googleUser = await auth2Ref.current.signIn();
       const id_token = googleUser.getAuthResponse().id_token;
 
-      const response = await axios.post('http://localhost:3001/users/google-signup', { id_token });
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/users/google-signup`, { id_token });
 
       if (response.data.accessToken && response.data.id) {
         localStorage.setItem('accessToken', response.data.accessToken);

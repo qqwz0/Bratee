@@ -36,7 +36,7 @@ const ReviewsContainer = ({ reviews }) => {
         try {
             const accessToken = localStorage.getItem('accessToken');
 
-            await axios.delete(`http://localhost:3001/reviews/${id}`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/reviews/${id}`, {
                 headers: { accessToken }
             });
 
@@ -150,7 +150,7 @@ const SearchBar = ({ searchTerm, setSearchTerm, onSearch, resetReviews }) => {
 
 const Comment = ({ id, title, stars, text, time, image, bookId, onDelete }) => (
     <div className="comment">
-        <img src={`http://localhost:3001/${image}`} alt="Book icon" className="commentImage" />
+        <img src={`${process.env.REACT_APP_API_URL}/${image}`} alt="Book icon" className="commentImage" />
         <div style={{width: '100%'}}>
             <div className="commentHeader">
                 <div>

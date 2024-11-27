@@ -11,7 +11,7 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
   const [profilePicture, setProfilePicture] = useState('');
   const [profilePictureFile, setProfilePictureFile] = useState(null);
 
-  const serverUrl = 'http://localhost:3001/';
+  const serverUrl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (user) {
@@ -37,7 +37,7 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
       formData.append('deleteProfilePicture', 'true'); // Flag to delete the profile picture
   
       // Send the update request to the backend
-      axios.put(`http://localhost:3001/users/${userId}`, formData, {
+      axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, formData, {
         headers: { accessToken },
       })
       .then((response) => {
@@ -72,7 +72,7 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
     console.log(formData);
 
     try {
-      const response = await axios.put(`http://localhost:3001/users/${userId}`, formData, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, formData, {
         headers: {
           accessToken
         },
@@ -95,7 +95,7 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
   
   const handleSave = async (formData) => {
     try {
-      const response = await axios.put(`http://localhost:3001/users/${userId}`, formData, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/users/${userId}`, formData, {
         headers: 
          {accessToken}, // Include access token if required
       });
@@ -167,7 +167,7 @@ const ProfileHeader = ({ nickname: initialNickname, email, pfp:initialPfp }) => 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/users/${urlUserId}`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${urlUserId}`, {
           headers: {
             accessToken
           },
@@ -202,7 +202,7 @@ const ProfileHeader = ({ nickname: initialNickname, email, pfp:initialPfp }) => 
         <div style={{ display: 'flex' }}>
           <div className="profile-picture">
             <img
-              src={profilePicture ? `http://localhost:3001/${profilePicture}` : `http://localhost:3001/pfps/311e7ad01e414f0821610c9c4f7a48ae.jpg`}
+              src={profilePicture ? `${process.env.REACT_APP_API_URL}/${profilePicture}` : `${process.env.REACT_APP_API_URL}/pfps/311e7ad01e414f0821610c9c4f7a48ae.jpg`}
               className="item-image"
               alt="Profile"
             />

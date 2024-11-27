@@ -31,21 +31,32 @@ const ListItem = ({ item, setItems, onDelete, variant }) => {
     // Оновлення книги
     const handleUpdate = async (updatedData) => {
         console.log("Оновлені дані:", updatedData);
-
+    
         const formData = new FormData();
         formData.append('title', updatedData.title);
         formData.append('description', updatedData.description);
         formData.append('UserId', updatedData.userId);
-
+    
         if (updatedData.coverFile) {
             formData.append('cover', updatedData.coverFile);
         }
-
+    
         try {
-            const response = await axios.put(`http://localhost:3001/books/${updatedData.id}`, formData);
-
+            const response = await axios.put(`${process.env.REACT_APP_API_URL}/books/${updatedData.id}`, formData);
+    
             if (response.status === 200) {
                 console.log('Книгу успішно оновлено:', response.data);
+    
+                // Update only the status of the book in the UI
+                const newStatus = response.data.status; // Assume the backend response includes the new status
+    
+                setItems((prevItems) =>
+                    prevItems.map((item) =>
+                        item.id === updatedData.id
+                            ? { ...item, status: newStatus }
+                            : item
+                    )
+                );
             } else {
                 console.error('Помилка оновлення книги');
             }
@@ -53,11 +64,12 @@ const ListItem = ({ item, setItems, onDelete, variant }) => {
             console.error('Помилка оновлення книги:', error);
         }
     };
+    
 
     // Видалення книги
     const handleDelete = async () => {
         try {
-            await axios.delete(`http://localhost:3001/books/${item.id}`);
+            await axios.delete(`${process.env.REACT_APP_API_URL}/books/${item.id}`);
             onDelete(item.id);
         } catch (error) {
             console.error('Помилка видалення книги:', error);
@@ -94,7 +106,7 @@ const ListItem = ({ item, setItems, onDelete, variant }) => {
             {/* Вміст книги */}
             <div className="item-content">
                 <img
-                    src={item.cover ? `http://localhost:3001/${item.cover}` : ''}
+                    src={item.cover ? `${process.env.REACT_APP_API_URL}/${item.cover}` : ''}
                     alt={item.title}
                     className="item-image"
                 />

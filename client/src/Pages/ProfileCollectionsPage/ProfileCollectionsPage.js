@@ -39,7 +39,7 @@ function ProfileCollectionsPage() {
     useEffect(() => {
     const fetchUser = async () => {
         try {
-            const userResponse = await axios.get(`http://localhost:3001/users/${id}`);
+            const userResponse = await axios.get(`${process.env.REACT_APP_API_URL}/users/${id}`);
             setUser(userResponse.data);
         } catch (err) {
             console.error("Error fetching user data:", err);
@@ -48,7 +48,7 @@ function ProfileCollectionsPage() {
 
     const fetchAllBooks = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/likedBooks/${id}`);
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/likedBooks/${id}`);
             const likedBooks = response.data.likedBooks.map(item => ({
                 ...item.book,
                 updatedAt: item.updatedAt,

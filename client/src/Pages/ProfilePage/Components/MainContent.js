@@ -5,7 +5,7 @@ import ListItem from './ListItem';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
-const MainContent = ({ items, onDelete, openCreateBookModal, setFilterText, variant }) => {
+const MainContent = ({ items, onDelete, setItems, openCreateBookModal, setFilterText, variant }) => {
     console.log("MainContent items:", items);
 
     return (
@@ -31,7 +31,7 @@ const MainContent = ({ items, onDelete, openCreateBookModal, setFilterText, vari
             <div className="items-container">
                 {Array.isArray(items) && items.length > 0 ? (
                     items.map((item) => (
-                        <ListItem key={item.id} item={item} onDelete={onDelete} variant={variant} />
+                        <ListItem key={item.id} item={item} setItems={setItems} onDelete={onDelete} variant={variant} />
                     ))
                 ) : (
                     <div className="no-books-message">

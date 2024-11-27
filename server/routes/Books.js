@@ -223,7 +223,11 @@ router.put('/:id', upload.single('cover'), async (req, res) => {
             { where: { id } }
         );
 
-        res.status(200).json({ message: 'Update request submitted', updatedBookId: newBook.id });
+        res.status(200).json({ 
+            message: 'Update request submitted', 
+            updatedBookId: newBook.id,
+            status: 'pending-update' // Include the new book's status
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error processing update request' });
@@ -282,7 +286,7 @@ router.get('/search', async (req, res) => {
         });
 
         if (books.length === 0) {
-            return res.status(404).json({ error: 'No approved books found with the specified title' });
+            return res.status(404).json({ error: 'Немає книжок з такою назвою' });
         }
 
         res.json(books);
@@ -362,10 +366,16 @@ router.delete('/reject-update/:id', async (req, res) => {
             return res.status(404).json({ error: 'Book with update data not found' });
         }
 
+        // Update the original book's status to 'approved'
+        await Books.update(
+            { status: 'approved' },
+            { where: { id: updatedBook.updated_book_id } }
+        );
+
         // Delete the book with status 'updatedata'
         await Books.destroy({ where: { id: updatedBook.id } });
 
-        res.status(200).json({ message: 'Book update rejected and update data deleted' });
+        res.status(200).json({ message: 'Book update rejected, update data deleted, and original book approved' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Error rejecting update' });
@@ -391,5 +401,3 @@ router.post('/reject/:bookId', async (req, res) => {
 });
 
 module.exports = router;
-
-module.exports = router

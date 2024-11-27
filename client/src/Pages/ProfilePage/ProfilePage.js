@@ -22,11 +22,11 @@ function ProfilePage() {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const response = await axios.get(`http://localhost:3001/users/${id}`);
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/users/${id}`);
                 setUser(response.data);
 
                 // Отримання книг, взятих користувачем
-                const booksResponse = await axios.get(`http://localhost:3001/books/byUserId/${id}`);
+                const booksResponse = await axios.get(`${process.env.REACT_APP_API_URL}/books/byUserId/${id}`);
                 setItems(booksResponse.data);
             } catch (err) {
                 console.log("Помилка при отриманні даних користувача:", err);

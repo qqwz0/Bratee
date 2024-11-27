@@ -37,7 +37,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             }
 
             // Отримання або створення автора
-            let authorResponse = await axios.get("http://localhost:3001/authors", {
+            let authorResponse = await axios.get(`${process.env.REACT_APP_API_URL}/authors`, {
                 headers: { accessToken }
             });
             let authorId;
@@ -48,12 +48,12 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             if (existingAuthor) {
                 authorId = existingAuthor.id;
             } else {
-                const newAuthorResponse = await axios.post("http://localhost:3001/authors", { full_name: data.AuthorId });
+                const newAuthorResponse = await axios.post(`${process.env.REACT_APP_API_URL}/authors`, { full_name: data.AuthorId });
                 authorId = newAuthorResponse.data.id;
             }
 
             // Отримання або створення жанру
-            let genreResponse = await axios.get("http://localhost:3001/genres");
+            let genreResponse = await axios.get(`${process.env.REACT_APP_API_URL}/authors`);
             let genreId;
             const existingGenre = genreResponse.data.find(
                 genre => genre.name.toLowerCase() === data.GenreId.toLowerCase()
@@ -62,7 +62,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             if (existingGenre) {
                 genreId = existingGenre.id;
             } else {
-                const newGenreResponse = await axios.post("http://localhost:3001/genres", { name: data.GenreId });
+                const newGenreResponse = await axios.post(`${process.env.REACT_APP_API_URL}/genres`, { name: data.GenreId });
                 genreId = newGenreResponse.data.id;
             }
 
@@ -75,7 +75,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             formData.append('cover', data.cover); // Додаємо обкладинку
 
             // Надсилання даних на сервер
-            const response = await axios.post("http://localhost:3001/books", formData, {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/books`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data', accessToken },
             });
             
