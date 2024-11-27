@@ -35,37 +35,53 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
                 setFieldError("cover", "Будь ласка, завантажте правильний формат (jpeg, jpg, png, gif).");
                 return;
             }
-
+    
             // Отримання або створення автора
             let authorResponse = await axios.get(`${process.env.REACT_APP_API_URL}/authors`, {
                 headers: { accessToken }
             });
             let authorId;
-            const existingAuthor = authorResponse.data.find(
-                author => author.full_name.toLowerCase() === data.AuthorId.toLowerCase()
-            );
-
-            if (existingAuthor) {
-                authorId = existingAuthor.id;
+            
+            // Check if AuthorId is provided before calling .toLowerCase()
+            if (data.AuthorId && data.AuthorId.trim()) {
+                const existingAuthor = authorResponse.data.find(
+                    author => author.full_name.toLowerCase() === data.AuthorId.toLowerCase()
+                );
+    
+                if (existingAuthor) {
+                    authorId = existingAuthor.id;
+                } else {
+                    const newAuthorResponse = await axios.post(`${process.env.REACT_APP_API_URL}/authors`, { full_name: data.AuthorId });
+                    authorId = newAuthorResponse.data.id;
+                }
             } else {
-                const newAuthorResponse = await axios.post(`${process.env.REACT_APP_API_URL}/authors`, { full_name: data.AuthorId });
-                authorId = newAuthorResponse.data.id;
+                setFieldError("AuthorId", "Ім'я автора є обов'язковим");
+                return;
             }
-
+    
             // Отримання або створення жанру
-            let genreResponse = await axios.get(`${process.env.REACT_APP_API_URL}/authors`);
+            let genreResponse = await axios.get(`${process.env.REACT_APP_API_URL}/genres`, {
+                headers: { accessToken }
+            });
             let genreId;
-            const existingGenre = genreResponse.data.find(
-                genre => genre.name.toLowerCase() === data.GenreId.toLowerCase()
-            );
-
-            if (existingGenre) {
-                genreId = existingGenre.id;
+            
+            // Check if GenreId is provided before calling .toLowerCase()
+            if (data.GenreId && data.GenreId.trim()) {
+                const existingGenre = genreResponse.data.find(
+                    genre => genre.name.toLowerCase() === data.GenreId.toLowerCase()
+                );
+    
+                if (existingGenre) {
+                    genreId = existingGenre.id;
+                } else {
+                    const newGenreResponse = await axios.post(`${process.env.REACT_APP_API_URL}/genres`, { name: data.GenreId });
+                    genreId = newGenreResponse.data.id;
+                }
             } else {
-                const newGenreResponse = await axios.post(`${process.env.REACT_APP_API_URL}/genres`, { name: data.GenreId });
-                genreId = newGenreResponse.data.id;
+                setFieldError("GenreId", "Жанр є обов'язковим");
+                return;
             }
-
+    
             // Підготовка даних форми з обкладинкою
             const formData = new FormData();
             formData.append('title', data.title);
@@ -73,7 +89,7 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             formData.append('AuthorId', authorId);
             formData.append('GenreId', genreId);
             formData.append('cover', data.cover); // Додаємо обкладинку
-
+    
             // Надсилання даних на сервер
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/books`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data', accessToken },
@@ -82,12 +98,12 @@ function CreateBook({ isOpen, onClose, onAddBook }) {
             const newBook = response.data;
             newBook.Author = { full_name: data.AuthorId };
             newBook.CreatedAt = new Date().toISOString();
-
+    
             onAddBook(newBook);
-
+    
             setNotification('Книга успішно завантажена!'); // Сповіщення про успіх
             resetForm(); // Очищення полів форми
-
+    
         } catch (err) {
             if (err.response) {
                 // Якщо є відповідь від сервера, показуємо повідомлення про помилку

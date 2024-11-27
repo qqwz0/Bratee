@@ -11,7 +11,7 @@ const UserInfoModal = ({ isOpen, onClose, user, onUpdate, onDelete, userId, acce
   const [profilePicture, setProfilePicture] = useState('');
   const [profilePictureFile, setProfilePictureFile] = useState(null);
 
-  const serverUrl = process.env.REACT_APP_API_URL;
+  const serverUrl = `${process.env.REACT_APP_API_URL}` + '/';
 
   useEffect(() => {
     if (user) {

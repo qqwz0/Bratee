@@ -9,13 +9,12 @@ const BookModal = ({ isOpen, onClose, book, onUpdate, onDelete }) => {
     const [cover, setCover] = useState('');
     const [coverFile, setCoverFile] = useState(null);
 
-    const serverUrl = `${process.env.REACT_APP_API_URL}`;
+    const serverUrl = `${process.env.REACT_APP_API_URL}` + '/';
 
     useEffect(() => {
         if (book) {
             setTitle(book.title);
-            setDescription(book.description);
-            setCover(book.cover ? `${serverUrl}/${book.cover}` : '');
+            setCover(book.cover ? `${serverUrl}${book.cover}` : '');
         }
     }, [book]);
 
